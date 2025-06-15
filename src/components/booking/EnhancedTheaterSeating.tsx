@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Users, Eye, Star, AlertCircle } from 'lucide-react';
+import SeatComponent from './SeatComponent';
 
 interface Seat {
   id: string;
@@ -119,25 +120,9 @@ const EnhancedTheaterSeating: React.FC<SeatLayoutProps> = ({
     onSeatSelect(newSelectedSeats);
   };
 
-  const getSeatColor = (seat: Seat): string => {
+  const getSeatStatus = (seat: Seat): 'available' | 'occupied' | 'selected' | 'locked' => {
     const isSelected = selectedSeats.find(s => s.id === seat.id);
-    const isHovered = hoveredSeat === seat.id;
-
-    if (isSelected) return 'bg-red-600 text-white border-red-700';
-    if (seat.status === 'occupied') return 'bg-gray-400 text-gray-600 cursor-not-allowed';
-    if (seat.status === 'locked') return 'bg-yellow-400 text-yellow-800 cursor-not-allowed';
-    if (isHovered && seat.status === 'available') return 'bg-red-100 border-red-300 text-red-700';
-
-    switch (seat.type) {
-      case 'premium':
-        return 'bg-green-50 border-green-300 text-green-700 hover:bg-green-100';
-      case 'standard':
-        return 'bg-blue-50 border-blue-300 text-blue-700 hover:bg-blue-100';
-      case 'economy':
-        return 'bg-purple-50 border-purple-300 text-purple-700 hover:bg-purple-100';
-      default:
-        return 'bg-gray-50 border-gray-300 text-gray-700 hover:bg-gray-100';
-    }
+    return isSelected ? 'selected' : seat.status;
   };
 
   const getTotalPrice = (): number => {
@@ -162,15 +147,15 @@ const EnhancedTheaterSeating: React.FC<SeatLayoutProps> = ({
         <CardContent>
           <div className="grid grid-cols-2 md:grid-cols-5 gap-4 text-sm">
             <div className="flex items-center space-x-2">
-              <div className="w-4 h-4 bg-green-50 border-2 border-green-300 rounded"></div>
+              <div className="w-4 h-4 bg-emerald-500 rounded"></div>
               <span>Premium ₹500</span>
             </div>
             <div className="flex items-center space-x-2">
-              <div className="w-4 h-4 bg-blue-50 border-2 border-blue-300 rounded"></div>
+              <div className="w-4 h-4 bg-blue-500 rounded"></div>
               <span>Standard ₹400</span>
             </div>
             <div className="flex items-center space-x-2">
-              <div className="w-4 h-4 bg-purple-50 border-2 border-purple-300 rounded"></div>
+              <div className="w-4 h-4 bg-violet-500 rounded"></div>
               <span>Economy ₹300</span>
             </div>
             <div className="flex items-center space-x-2">
@@ -188,9 +173,9 @@ const EnhancedTheaterSeating: React.FC<SeatLayoutProps> = ({
       {/* Seating Chart */}
       <Card className="bg-white/95 backdrop-blur-sm">
         <CardContent className="p-6">
-          <div className="space-y-3">
+          <div className="space-y-4">
             {seatingLayout.map((row, rowIndex) => (
-              <div key={rowIndex} className="flex justify-center items-center space-x-1">
+              <div key={rowIndex} className="flex justify-center items-center space-x-2">
                 {/* Row Label */}
                 <div className="w-8 text-center font-semibold text-gray-600">
                   {row[0]?.row}
@@ -205,18 +190,15 @@ const EnhancedTheaterSeating: React.FC<SeatLayoutProps> = ({
                     return (
                       <React.Fragment key={seat.id}>
                         {showAisle && seat.number > 6 && (
-                          <div className="w-6"></div>
+                          <div className="w-8"></div>
                         )}
-                        <button
-                          className={`theater-seat ${getSeatColor(seat)} border-2 transition-all duration-200 text-xs font-semibold`}
+                        <SeatComponent
+                          seatId={seat.id}
+                          status={getSeatStatus(seat)}
+                          type={seat.type}
                           onClick={() => handleSeatClick(seat)}
-                          onMouseEnter={() => setHoveredSeat(seat.id)}
-                          onMouseLeave={() => setHoveredSeat(null)}
                           disabled={seat.status === 'occupied' || seat.status === 'locked'}
-                          title={`${seat.id} - ₹${seat.price} (${seat.type})`}
-                        >
-                          {seat.number}
-                        </button>
+                        />
                       </React.Fragment>
                     );
                   })}
