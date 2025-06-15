@@ -16,15 +16,30 @@ const app = express();
 const server = http.createServer(app);
 const io = socketIo(server, {
   cors: {
-    origin: "http://localhost:8080",
-    methods: ["GET", "POST"]
+    origin: ["http://localhost:8080", "http://localhost:5173", "http://localhost:3000"],
+    methods: ["GET", "POST", "PUT", "DELETE"],
+    credentials: true
   }
 });
 
 // Middleware
-app.use(helmet());
-app.use(cors());
+app.use(helmet({
+  crossOriginEmbedderPolicy: false
+}));
+app.use(cors({
+  origin: ["http://localhost:8080", "http://localhost:5173", "http://localhost:3000"],
+  credentials: true
+}));
 app.use(express.json());
+
+// Health check endpoint
+app.get('/api/health', (req, res) => {
+  res.json({ 
+    status: 'OK', 
+    timestamp: new Date().toISOString(),
+    database: mongoose.connection.readyState === 1 ? 'Connected' : 'Disconnected'
+  });
+});
 
 // Make io available to routes
 app.use((req, res, next) => {
@@ -32,10 +47,33 @@ app.use((req, res, next) => {
   next();
 });
 
-// Database connection
-mongoose.connect(process.env.MONGODB_URI)
-  .then(() => console.log('Connected to MongoDB'))
-  .catch(err => console.error('MongoDB connection error:', err));
+// Database connection with better error handling
+const connectDB = async () => {
+  try {
+    console.log('Attempting to connect to MongoDB...');
+    await mongoose.connect(process.env.MONGODB_URI, {
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
+    });
+    console.log('✅ Connected to MongoDB successfully');
+    
+    // Initialize sample data after successful connection
+    await initializeSampleData();
+  } catch (error) {
+    console.error('❌ MongoDB connection error:', error.message);
+    console.log('Retrying connection in 5 seconds...');
+    setTimeout(connectDB, 5000);
+  }
+};
+
+// Handle MongoDB connection events
+mongoose.connection.on('disconnected', () => {
+  console.log('⚠️ MongoDB disconnected. Attempting to reconnect...');
+});
+
+mongoose.connection.on('error', (error) => {
+  console.error('MongoDB connection error:', error);
+});
 
 // Routes
 app.use('/api/shows', showRoutes);
@@ -80,6 +118,8 @@ io.on('connection', (socket) => {
 // Cleanup expired locks periodically
 setInterval(async () => {
   try {
+    if (mongoose.connection.readyState !== 1) return;
+    
     const shows = await Show.find({});
     for (const show of shows) {
       const hasChanges = show.cleanExpiredLocks();
@@ -138,16 +178,32 @@ async function initializeSampleData() {
         });
         
         await sampleShow.save();
-        console.log('Sample show data created');
+        console.log('✅ Sample show data created successfully');
       }
+    } else {
+      console.log('✅ Sample data already exists');
     }
   } catch (error) {
-    console.error('Error initializing sample data:', error);
+    console.error('❌ Error initializing sample data:', error);
   }
 }
 
 const PORT = process.env.PORT || 3001;
+
 server.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
-  initializeSampleData();
+  console.log(`🚀 Theater booking server running on port ${PORT}`);
+  console.log(`📍 Health check: http://localhost:${PORT}/api/health`);
+  console.log(`🔌 Socket.IO enabled for real-time updates`);
+  connectDB();
+});
+
+// Handle server shutdown gracefully
+process.on('SIGINT', () => {
+  console.log('\n⏹️ Shutting down server gracefully...');
+  server.close(() => {
+    mongoose.connection.close(() => {
+      console.log('✅ Server and database connections closed');
+      process.exit(0);
+    });
+  });
 });
