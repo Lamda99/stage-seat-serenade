@@ -1,4 +1,3 @@
-
 const express = require('express');
 const http = require('http');
 const socketIo = require('socket.io');
@@ -8,6 +7,7 @@ const helmet = require('helmet');
 require('dotenv').config();
 
 const showRoutes = require('./routes/shows');
+const adminRoutes = require('./routes/admin');
 const Show = require('./models/Show');
 
 const app = express();
@@ -37,6 +37,7 @@ mongoose.connect(process.env.MONGODB_URI)
 
 // Routes
 app.use('/api/shows', showRoutes);
+app.use('/api/admin', adminRoutes);
 
 // Socket.IO connection handling
 io.on('connection', (socket) => {
