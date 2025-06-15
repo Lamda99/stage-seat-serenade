@@ -1,12 +1,23 @@
 
 const express = require('express');
 const Show = require('../models/Show');
+const SeatLayout = require('../models/SeatLayout');
 const router = express.Router();
+
+// Get all shows
+router.get('/', async (req, res) => {
+  try {
+    const shows = await Show.find().populate('seatLayout').sort({ date: 1 });
+    res.json(shows);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
 
 // Get show details with current seat availability
 router.get('/:id', async (req, res) => {
   try {
-    const show = await Show.findById(req.params.id);
+    const show = await Show.findById(req.params.id).populate('seatLayout');
     if (!show) {
       return res.status(404).json({ error: 'Show not found' });
     }
@@ -20,6 +31,33 @@ router.get('/:id', async (req, res) => {
     res.json(show);
   } catch (error) {
     res.status(500).json({ error: error.message });
+  }
+});
+
+// Create new show with seat layout
+router.post('/', async (req, res) => {
+  try {
+    const { seatLayoutId, ...showData } = req.body;
+    
+    // Validate seat layout exists
+    const seatLayout = await SeatLayout.findById(seatLayoutId);
+    if (!seatLayout) {
+      return res.status(400).json({ error: 'Invalid seat layout ID' });
+    }
+    
+    const show = new Show({
+      ...showData,
+      seatLayout: seatLayoutId
+    });
+    
+    // Initialize seats from layout
+    await show.initializeSeatsFromLayout();
+    await show.save();
+    
+    await show.populate('seatLayout');
+    res.status(201).json(show);
+  } catch (error) {
+    res.status(400).json({ error: error.message });
   }
 });
 

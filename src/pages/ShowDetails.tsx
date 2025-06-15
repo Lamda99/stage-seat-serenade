@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { ArrowLeft, Star, Clock, MapPin, Calendar } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import { Link } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
 import EnhancedHeader from '../components/layout/EnhancedHeader';
 import CastSection from '../components/show/CastSection';
 import RealTimeTheaterSeating from '../components/booking/RealTimeTheaterSeating';
@@ -17,12 +17,12 @@ interface Seat {
 }
 
 const ShowDetails = () => {
+  const { id } = useParams<{ id: string }>();
   const [showSeats, setShowSeats] = useState(false);
   const [selectedSeats, setSelectedSeats] = useState<Seat[]>([]);
 
-  // For demo purposes, we'll use a static show ID
-  // In a real app, this would come from the URL params
-  const showId = "demo-show-id";
+  // Use the actual show ID from URL params, fallback to demo ID
+  const showId = id || "demo-show-id";
 
   const showData = {
     title: 'Folk लोक',

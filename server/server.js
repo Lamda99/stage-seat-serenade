@@ -8,7 +8,9 @@ const helmet = require('helmet');
 require('dotenv').config();
 
 const showRoutes = require('./routes/shows');
+const seatLayoutRoutes = require('./routes/seatLayouts');
 const Show = require('./models/Show');
+const { initializeDefaultLayouts } = require('./utils/layoutTemplates');
 
 const app = express();
 const server = http.createServer(app);
@@ -37,6 +39,7 @@ mongoose.connect(process.env.MONGODB_URI)
 
 // Routes
 app.use('/api/shows', showRoutes);
+app.use('/api/seat-layouts', seatLayoutRoutes);
 
 // Socket.IO connection handling
 io.on('connection', (socket) => {
@@ -103,67 +106,40 @@ setInterval(async () => {
 // Create sample show data if none exists
 async function initializeSampleData() {
   try {
+    // Initialize default layouts first
+    const layouts = await initializeDefaultLayouts();
+    
     const existingShow = await Show.findOne();
     if (!existingShow) {
-      const sampleSeats = [];
+      console.log('Creating sample show with default layout...');
       
-      // Premium section (rows A-C)
-      for (let rowIndex = 0; rowIndex < 3; rowIndex++) {
-        const rowLetter = String.fromCharCode(65 + rowIndex);
-        for (let seatNum = 1; seatNum <= 14; seatNum++) {
-          if (seatNum === 5 || seatNum === 11) continue;
-          sampleSeats.push({
-            id: `${rowLetter}${seatNum}`,
-            row: rowLetter,
-            number: seatNum,
-            type: 'premium',
-            status: Math.random() > 0.8 ? 'occupied' : 'available',
-            price: 500
-          });
-        }
+      // Get the default theater layout
+      const defaultLayout = Array.isArray(layouts) 
+        ? layouts.find(l => l.name === 'Standard Theater Layout')
+        : layouts.defaultTheater;
+      
+      if (defaultLayout) {
+        const sampleShow = new Show({
+          title: 'Folk लोक',
+          venue: 'Anna Bhau Sathe Auditorium',
+          date: new Date('2025-06-15T19:30:00Z'),
+          seatLayout: defaultLayout._id
+        });
+
+        await sampleShow.initializeSeatsFromLayout();
+        
+        // Add some random occupied seats for demo
+        sampleShow.seats.forEach(seat => {
+          if (Math.random() > 0.8) {
+            seat.status = 'occupied';
+            seat.bookedBy = 'demo-user';
+            seat.bookedAt = new Date();
+          }
+        });
+        
+        await sampleShow.save();
+        console.log('Sample show data created');
       }
-
-      // Standard section (rows D-H)
-      for (let rowIndex = 3; rowIndex < 8; rowIndex++) {
-        const rowLetter = String.fromCharCode(65 + rowIndex);
-        for (let seatNum = 1; seatNum <= 16; seatNum++) {
-          if (seatNum === 5 || seatNum === 13) continue;
-          sampleSeats.push({
-            id: `${rowLetter}${seatNum}`,
-            row: rowLetter,
-            number: seatNum,
-            type: 'standard',
-            status: Math.random() > 0.7 ? 'occupied' : 'available',
-            price: 400
-          });
-        }
-      }
-
-      // Economy section (rows I-L)
-      for (let rowIndex = 8; rowIndex < 12; rowIndex++) {
-        const rowLetter = String.fromCharCode(65 + rowIndex);
-        for (let seatNum = 1; seatNum <= 18; seatNum++) {
-          if (seatNum === 6 || seatNum === 14) continue;
-          sampleSeats.push({
-            id: `${rowLetter}${seatNum}`,
-            row: rowLetter,
-            number: seatNum,
-            type: 'economy',
-            status: Math.random() > 0.6 ? 'occupied' : 'available',
-            price: 300
-          });
-        }
-      }
-
-      const sampleShow = new Show({
-        title: 'Folk लोक',
-        venue: 'Anna Bhau Sathe Auditorium',
-        date: new Date('2025-06-15T19:30:00Z'),
-        seats: sampleSeats
-      });
-
-      await sampleShow.save();
-      console.log('Sample show data created');
     }
   } catch (error) {
     console.error('Error initializing sample data:', error);

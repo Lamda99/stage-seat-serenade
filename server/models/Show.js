@@ -1,7 +1,7 @@
 
 const mongoose = require('mongoose');
 
-const seatSchema = new mongoose.Schema({
+const seatInstanceSchema = new mongoose.Schema({
   id: { type: String, required: true },
   row: { type: String, required: true },
   number: { type: Number, required: true },
@@ -26,12 +26,37 @@ const showSchema = new mongoose.Schema({
   title: { type: String, required: true },
   venue: { type: String, required: true },
   date: { type: Date, required: true },
-  seats: [seatSchema],
+  seatLayout: { 
+    type: mongoose.Schema.Types.ObjectId, 
+    ref: 'SeatLayout',
+    required: true 
+  },
+  seats: [seatInstanceSchema], // Runtime seat instances with booking status
   maxSeatsPerBooking: { type: Number, default: 6 },
   seatLockDuration: { type: Number, default: 300000 } // 5 minutes in ms
 }, {
   timestamps: true
 });
+
+// Initialize seats from layout when creating a show
+showSchema.methods.initializeSeatsFromLayout = async function() {
+  if (!this.seatLayout) {
+    throw new Error('Seat layout is required to initialize seats');
+  }
+  
+  await this.populate('seatLayout');
+  
+  this.seats = this.seatLayout.seats.map(layoutSeat => ({
+    id: layoutSeat.id,
+    row: layoutSeat.row,
+    number: layoutSeat.number,
+    type: layoutSeat.type,
+    status: 'available',
+    price: layoutSeat.price
+  }));
+  
+  return this;
+};
 
 // Clean up expired locks
 showSchema.methods.cleanExpiredLocks = function() {
