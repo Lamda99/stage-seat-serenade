@@ -9,11 +9,17 @@ import Header from '../components/layout/Header';
 import Footer from '../components/layout/Footer';
 import { Link } from 'react-router-dom';
 import { useLocation } from '@/hooks/useLocation';
+import { useCorporateTheme } from '@/components/ui/corporate-theme-provider';
+import { getCategoryNames } from '@/data/categoriesData';
 
 const EventListing = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('all');
   const { selectedCity, popularCities, updateSelectedCity } = useLocation();
+  const { isCorporate } = useCorporateTheme();
+
+  // Get categories based on current theme
+  const availableCategories = getCategoryNames(isCorporate);
 
   const events = [
     {
@@ -89,10 +95,21 @@ const EventListing = () => {
       <Header />
       
       {/* Page Header */}
-      <div className="bg-gradient-to-r from-red-600 to-red-800 text-white py-12">
+      <div className={`text-white py-12 ${
+        isCorporate 
+          ? 'bg-gradient-to-r from-blue-600 to-blue-800' 
+          : 'bg-gradient-to-r from-red-600 to-red-800'
+      }`}>
         <div className="max-w-7xl mx-auto px-4">
-          <h1 className="text-4xl font-bold mb-4">Discover Events in {selectedCity}</h1>
-          <p className="text-xl opacity-90">Find the perfect entertainment experience near you</p>
+          <h1 className="text-4xl font-bold mb-4">
+            {isCorporate ? 'Professional Events' : 'Discover Events'} in {selectedCity}
+          </h1>
+          <p className="text-xl opacity-90">
+            {isCorporate 
+              ? 'Find the perfect professional development opportunity near you'
+              : 'Find the perfect entertainment experience near you'
+            }
+          </p>
         </div>
       </div>
 
@@ -116,11 +133,9 @@ const EventListing = () => {
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">All Categories</SelectItem>
-                <SelectItem value="Theatre">Theatre</SelectItem>
-                <SelectItem value="Music">Music</SelectItem>
-                <SelectItem value="Drama">Drama</SelectItem>
-                <SelectItem value="Play">Play</SelectItem>
-                <SelectItem value="Dance">Dance</SelectItem>
+                {availableCategories.map(category => (
+                  <SelectItem key={category} value={category}>{category}</SelectItem>
+                ))}
               </SelectContent>
             </Select>
 
@@ -135,7 +150,11 @@ const EventListing = () => {
               </SelectContent>
             </Select>
 
-            <Button className="bg-red-600 hover:bg-red-700">
+            <Button className={`${
+              isCorporate 
+                ? 'bg-blue-600 hover:bg-blue-700' 
+                : 'bg-red-600 hover:bg-red-700'
+            }`}>
               <Filter className="h-4 w-4 mr-2" />
               Apply Filters
             </Button>
@@ -206,7 +225,11 @@ const EventListing = () => {
                 </div>
 
                 <Link to={`/show/${event.id}`}>
-                  <Button className="w-full bg-red-600 hover:bg-red-700 text-white">
+                  <Button className={`w-full text-white ${
+                    isCorporate 
+                      ? 'bg-blue-600 hover:bg-blue-700' 
+                      : 'bg-red-600 hover:bg-red-700'
+                  }`}>
                     View Details
                   </Button>
                 </Link>

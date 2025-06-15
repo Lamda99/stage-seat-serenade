@@ -5,7 +5,8 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Link } from 'react-router-dom';
 import { useCorporateTheme } from '@/components/ui/corporate-theme-provider';
-import { corporateEvents, corporateCategories } from '@/data/corporateData';
+import { corporateEvents } from '@/data/corporateData';
+import { getCategoryNames, getFeaturedCategories } from '@/data/categoriesData';
 
 const EventsSection = () => {
   const { isCorporate } = useCorporateTheme();
@@ -70,7 +71,7 @@ const EventsSection = () => {
   ];
 
   const events = isCorporate ? corporateEvents.slice(0, 5) : casualEvents;
-  const categories = isCorporate ? corporateCategories : ['Theatre', 'Music', 'Dance', 'Comedy', 'Drama', 'Poetry'];
+  const categories = getFeaturedCategories(isCorporate, 6);
 
   return (
     <section className={`py-12 px-4 ${
@@ -176,7 +177,7 @@ const EventsSection = () => {
           </h3>
           <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
             {categories.map((category) => (
-              <Link key={category} to={`/events?category=${category}`}>
+              <Link key={category.id} to={`/events?category=${category.name}`}>
                 <Card className={`cursor-pointer hover:shadow-md transition-shadow duration-200 border ${
                   isCorporate 
                     ? 'bg-gradient-to-br from-blue-50 to-slate-50 border-blue-100 hover:border-blue-200' 
@@ -188,9 +189,9 @@ const EventsSection = () => {
                         ? 'bg-blue-600' 
                         : 'bg-red-600'
                     }`}>
-                      <span className="text-white font-bold text-lg">{category[0]}</span>
+                      <span className="text-white font-bold text-lg">{category.icon}</span>
                     </div>
-                    <h4 className="font-semibold text-gray-800">{category}</h4>
+                    <h4 className="font-semibold text-gray-800 text-sm">{category.name}</h4>
                   </CardContent>
                 </Card>
               </Link>
