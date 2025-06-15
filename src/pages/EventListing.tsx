@@ -1,5 +1,4 @@
-
-import React, { useState, useEffect } from 'react';
+import React, { useState, useMemo } from 'react';
 import { Search, Filter, MapPin, Calendar, Star, Clock } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
@@ -9,80 +8,78 @@ import Header from '../components/layout/Header';
 import Footer from '../components/layout/Footer';
 import { Link } from 'react-router-dom';
 import { useLocation } from '@/hooks/useLocation';
+import { useQuery } from '@tanstack/react-query';
+import { Show } from '@/types/show';
+import { Skeleton } from '@/components/ui/skeleton';
+
+const fetchEventsByCity = async (city: string): Promise<Show[]> => {
+  const response = await fetch(`/api/shows?city=${city}`);
+  if (!response.ok) {
+    throw new Error('Failed to fetch events');
+  }
+  return response.json();
+};
 
 const EventListing = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('all');
+  const [sortBy, setSortBy] = useState('date');
   const { selectedCity, popularCities, updateSelectedCity } = useLocation();
 
-  const events = [
-    {
-      id: 1,
-      title: 'Folk आख्यान',
-      subtitle: 'मृगनकं - नाटक',
-      date: '28/06/2025',
-      time: '7:00 PM',
-      rating: '4.5',
-      reviews: '14.3K',
-      image: 'https://images.unsplash.com/photo-1605810230434-7631ac76ec81?auto=format&fit=crop&w=400&q=80',
-      venue: 'Anna Bhau Sathe Auditorium',
-      city: 'Pune',
-      price: '₹200',
-      category: 'Theatre',
-      language: 'Marathi'
-    },
-    {
-      id: 2,
-      title: 'श्यासात राजं, ध्यासात राजं',
-      date: '09/06/2025',
-      time: '9:30 PM',
-      rating: '4.2',
-      reviews: '14.3K',
-      image: 'https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?auto=format&fit=crop&w=400&q=80',
-      venue: 'Yashwantrao Chavan Auditorium',
-      city: 'Mumbai',
-      price: '₹300',
-      category: 'Drama',
-      language: 'Marathi'
-    },
-    {
-      id: 3,
-      title: 'Folk लोक',
-      date: '08/06/2025',
-      time: '9:30 PM',
-      rating: '4.7',
-      reviews: '14.3K',
-      image: 'https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?auto=format&fit=crop&w=400&q=80',
-      venue: 'Tilak Smarak Mandir',
-      city: 'Pune',
-      price: '₹250',
-      category: 'Music',
-      language: 'Hindi/Marathi'
-    },
-    {
-      id: 4,
-      title: 'Mahapur',
-      date: '14/06/2025',
-      time: '8:30 PM',
-      rating: '3.8',
-      reviews: '1K',
-      image: 'https://images.unsplash.com/photo-1500673922987-e212871fec22?auto=format&fit=crop&w=400&q=80',
-      venue: 'Balgandharva Theatre',
-      city: 'Mumbai',
-      price: '₹400',
-      category: 'Play',
-      language: 'Marathi'
-    }
-  ];
-
-  const filteredEvents = events.filter(event => {
-    const matchesSearch = event.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         event.venue.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesCategory = selectedCategory === 'all' || event.category === selectedCategory;
-    const matchesCity = event.city === selectedCity;
-    
-    return matchesSearch && matchesCategory && matchesCity;
+  const { data: events = [], isLoading } = useQuery({
+    queryKey: ['events', selectedCity],
+    queryFn: () => fetchEventsByCity(selectedCity),
+    enabled: !!selectedCity,
   });
+
+  const filteredAndSortedEvents = useMemo(() => {
+    let filtered = events.filter(event => {
+      const matchesSearch = event.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                           event.venue.toLowerCase().includes(searchTerm.toLowerCase());
+      const matchesCategory = selectedCategory === 'all' || event.category === selectedCategory;
+      return matchesSearch && matchesCategory;
+    });
+
+    // Sorting logic
+    return filtered.sort((a, b) => {
+      switch (sortBy) {
+        case 'rating':
+          return (b.rating || 0) - (a.rating || 0);
+        case 'price-low': {
+          const priceA = parseInt(a.displayPrice?.replace(/[^0-9]/g, '') || '0');
+          const priceB = parseInt(b.displayPrice?.replace(/[^0-9]/g, '') || '0');
+          return priceA - priceB;
+        }
+        case 'price-high': {
+          const priceA = parseInt(a.displayPrice?.replace(/[^0-9]/g, '') || '0');
+          const priceB = parseInt(b.displayPrice?.replace(/[^0-9]/g, '') || '0');
+          return priceB - priceA;
+        }
+        case 'date':
+        default:
+          return new Date(a.date).getTime() - new Date(b.date).getTime();
+      }
+    });
+  }, [events, searchTerm, selectedCategory, sortBy]);
+  
+  const uniqueCategories = useMemo(() => {
+    const categories = new Set(events.map(e => e.category));
+    return ['all', ...Array.from(categories)];
+  }, [events]);
+
+  const renderSkeletons = () => (
+    [...Array(6)].map((_, i) => (
+      <Card key={i}>
+        <Skeleton className="h-48 w-full rounded-t-lg" />
+        <CardContent className="p-4 space-y-3">
+          <Skeleton className="h-6 w-3/4" />
+          <Skeleton className="h-4 w-full" />
+          <Skeleton className="h-4 w-1/2" />
+          <Skeleton className="h-10 w-full mt-2" />
+        </CardContent>
+      </Card>
+    ))
+  );
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -115,12 +112,9 @@ const EventListing = () => {
                 <SelectValue placeholder="Category" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">All Categories</SelectItem>
-                <SelectItem value="Theatre">Theatre</SelectItem>
-                <SelectItem value="Music">Music</SelectItem>
-                <SelectItem value="Drama">Drama</SelectItem>
-                <SelectItem value="Play">Play</SelectItem>
-                <SelectItem value="Dance">Dance</SelectItem>
+                {uniqueCategories.map(cat => (
+                  <SelectItem key={cat} value={cat}>{cat === 'all' ? 'All Categories' : cat}</SelectItem>
+                ))}
               </SelectContent>
             </Select>
 
@@ -135,6 +129,7 @@ const EventListing = () => {
               </SelectContent>
             </Select>
 
+            {/* The apply filters button is decorative without a form handler */}
             <Button className="bg-red-600 hover:bg-red-700">
               <Filter className="h-4 w-4 mr-2" />
               Apply Filters
@@ -145,9 +140,9 @@ const EventListing = () => {
         {/* Results Header */}
         <div className="flex justify-between items-center mb-6">
           <h2 className="text-2xl font-bold text-gray-800">
-            {filteredEvents.length} Events Found in {selectedCity}
+            {filteredAndSortedEvents.length} Events Found in {selectedCity}
           </h2>
-          <Select defaultValue="date">
+          <Select value={sortBy} onValueChange={setSortBy}>
             <SelectTrigger className="w-48">
               <SelectValue placeholder="Sort by" />
             </SelectTrigger>
@@ -162,8 +157,8 @@ const EventListing = () => {
 
         {/* Events Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {filteredEvents.map((event) => (
-            <Card key={event.id} className="hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1">
+          {isLoading ? renderSkeletons() : filteredAndSortedEvents.map((event) => (
+            <Card key={event._id} className="hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1">
               <div className="relative overflow-hidden rounded-t-lg">
                 <img
                   src={event.image}
@@ -190,7 +185,7 @@ const EventListing = () => {
 
                 <div className="flex items-center text-sm text-gray-600 mb-2">
                   <Calendar className="h-4 w-4 mr-1" />
-                  <span>{event.date}</span>
+                  <span>{new Date(event.date).toLocaleDateString('en-IN', {day: '2-digit', month: '2-digit', year: 'numeric'})}</span>
                   <Clock className="h-4 w-4 ml-3 mr-1" />
                   <span>{event.time}</span>
                 </div>
@@ -201,11 +196,11 @@ const EventListing = () => {
                 </div>
 
                 <div className="flex justify-between items-center mb-3">
-                  <span className="text-lg font-bold text-gray-800">{event.price} onwards</span>
+                  <span className="text-lg font-bold text-gray-800">{event.displayPrice} onwards</span>
                   <span className="text-xs text-gray-500">{event.language}</span>
                 </div>
 
-                <Link to={`/show/${event.id}`}>
+                <Link to={`/show/${event._id}`}>
                   <Button className="w-full bg-red-600 hover:bg-red-700 text-white">
                     View Details
                   </Button>
@@ -216,7 +211,7 @@ const EventListing = () => {
         </div>
 
         {/* No Results */}
-        {filteredEvents.length === 0 && (
+        {filteredAndSortedEvents.length === 0 && !isLoading && (
           <div className="text-center py-12">
             <p className="text-gray-500 text-lg">No events found in {selectedCity} matching your criteria.</p>
             <Button 
