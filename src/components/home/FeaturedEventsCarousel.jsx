@@ -1,15 +1,17 @@
-
 import React, { useState, useEffect } from 'react';
 import { ChevronLeft, ChevronRight, Star, Clock, MapPin } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Link } from 'react-router-dom';
+import { useCorporateTheme } from '@/components/ui/corporate-theme-provider';
+import { corporateEvents } from '@/data/corporateData';
 
 const FeaturedEventsCarousel = () => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isAutoPlaying, setIsAutoPlaying] = useState(true);
+  const { isCorporate } = useCorporateTheme();
 
-  const featuredEvents = [
+  const casualEvents = [
     {
       id: 1,
       title: 'Folk आख्यान - Cultural Evening',
@@ -64,6 +66,8 @@ const FeaturedEventsCarousel = () => {
     }
   ];
 
+  const featuredEvents = isCorporate ? corporateEvents : casualEvents;
+
   const nextSlide = () => {
     setCurrentIndex((prev) => (prev + 1) % featuredEvents.length);
   };
@@ -87,13 +91,26 @@ const FeaturedEventsCarousel = () => {
   }, [isAutoPlaying, currentIndex]);
 
   return (
-    <section className="py-16 px-4 bg-gradient-to-br from-gray-50 to-white">
+    <section className={`py-16 px-4 ${
+      isCorporate 
+        ? 'bg-gradient-to-br from-slate-50 to-blue-50' 
+        : 'bg-gradient-to-br from-gray-50 to-white'
+    }`}>
       <div className="max-w-7xl mx-auto">
         {/* Section Header */}
         <div className="text-center mb-12">
-          <h2 className="text-4xl font-bold text-gray-800 mb-4">Featured Events</h2>
-          <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-            Discover the best cultural performances and entertainment events in your city
+          <h2 className={`text-4xl font-bold mb-4 ${
+            isCorporate ? 'text-slate-800' : 'text-gray-800'
+          }`}>
+            {isCorporate ? 'Featured Professional Events' : 'Featured Events'}
+          </h2>
+          <p className={`text-lg max-w-2xl mx-auto ${
+            isCorporate ? 'text-slate-600' : 'text-gray-600'
+          }`}>
+            {isCorporate 
+              ? 'Advance your career with premium business and professional development events'
+              : 'Discover the best cultural performances and entertainment events in your city'
+            }
           </p>
         </div>
 
@@ -110,8 +127,12 @@ const FeaturedEventsCarousel = () => {
                   />
                   
                   {/* Featured Badge */}
-                  <div className="absolute top-3 left-3 bg-gradient-to-r from-red-600 to-red-700 text-white px-3 py-1 rounded-full text-xs font-semibold">
-                    FEATURED
+                  <div className={`absolute top-3 left-3 text-white px-3 py-1 rounded-full text-xs font-semibold ${
+                    isCorporate 
+                      ? 'bg-gradient-to-r from-blue-600 to-slate-700' 
+                      : 'bg-gradient-to-r from-red-600 to-red-700'
+                  }`}>
+                    {isCorporate ? 'PROFESSIONAL' : 'FEATURED'}
                   </div>
                   
                   {/* Rating Badge */}
@@ -154,8 +175,12 @@ const FeaturedEventsCarousel = () => {
         {/* Call to Action */}
         <div className="text-center">
           <Link to="/events">
-            <Button className="bg-red-600 hover:bg-red-700 text-white px-8 py-3 rounded-lg font-semibold text-lg transition-all duration-300 transform hover:scale-105">
-              Explore All Events
+            <Button className={`px-8 py-3 rounded-lg font-semibold text-lg transition-all duration-300 transform hover:scale-105 ${
+              isCorporate 
+                ? 'bg-blue-600 hover:bg-blue-700 text-white' 
+                : 'bg-red-600 hover:bg-red-700 text-white'
+            }`}>
+              {isCorporate ? 'Explore Professional Events' : 'Explore All Events'}
             </Button>
           </Link>
         </div>

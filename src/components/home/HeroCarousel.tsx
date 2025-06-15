@@ -2,39 +2,15 @@
 import React, { useState, useEffect } from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import ThemedButton from '@/components/ui/themed-button';
+import { useCorporateTheme } from '@/components/ui/corporate-theme-provider';
+import { carouselSlides } from '@/data/carouselData';
+import { corporateSlides } from '@/data/corporateData';
 
 const HeroCarousel = () => {
   const [currentSlide, setCurrentSlide] = useState(0);
-
-  const slides = [
-    {
-      id: 1,
-      title: 'Folk लोक',
-      subtitle: 'लोकसंगीताचं दिन',
-      description: 'मगर भगतलेले गुणगान...',
-      director: 'निर्देशक: ओमप्र भूतकर',
-      image: 'https://images.unsplash.com/photo-1605810230434-7631ac76ec81?auto=format&fit=crop&w=1920&q=80',
-      category: 'Folk Music'
-    },
-    {
-      id: 2,
-      title: 'रंग',
-      subtitle: 'Classical Dance Performance',
-      description: 'A mesmerizing journey through traditional Indian dance forms',
-      director: 'निर्देशक: राज शर्मा',
-      image: 'https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?auto=format&fit=crop&w=1920&q=80',
-      category: 'Dance'
-    },
-    {
-      id: 3,
-      title: 'संगीत महोत्सव',
-      subtitle: 'Music Festival',
-      description: 'An evening of classical and folk music',
-      director: 'निर्देशक: अनिल देसाई',
-      image: 'https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?auto=format&fit=crop&w=1920&q=80',
-      category: 'Music'
-    }
-  ];
+  const { isCorporate } = useCorporateTheme();
+  
+  const slides = isCorporate ? corporateSlides : carouselSlides;
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -42,6 +18,11 @@ const HeroCarousel = () => {
     }, 5000);
     return () => clearInterval(timer);
   }, [slides.length]);
+
+  useEffect(() => {
+    // Reset to first slide when theme changes
+    setCurrentSlide(0);
+  }, [isCorporate]);
 
   const nextSlide = () => {
     setCurrentSlide((prev) => (prev + 1) % slides.length);
@@ -69,15 +50,27 @@ const HeroCarousel = () => {
               style={{ backgroundImage: `url(${slide.image})` }}
             />
             
-            {/* Palette-aware overlay */}
-            <div className="absolute inset-0 palette-diagonal-overlay" />
+            {/* Theme-aware overlay */}
+            <div className={`absolute inset-0 ${
+              isCorporate 
+                ? 'bg-gradient-to-r from-blue-900/80 to-slate-900/80' 
+                : 'palette-diagonal-overlay'
+            }`} />
             
             <div className="absolute inset-0 flex items-center justify-center">
               <div className="text-center max-w-4xl px-4">
-                <div className="bg-yellow-500 text-black px-4 py-1 rounded-full text-sm font-semibold mb-4 inline-block">
+                <div className={`px-4 py-1 rounded-full text-sm font-semibold mb-4 inline-block ${
+                  isCorporate 
+                    ? 'bg-blue-600 text-white' 
+                    : 'bg-yellow-500 text-black'
+                }`}>
                   {slide.category}
                 </div>
-                <h1 className="text-6xl md:text-8xl font-bold mb-2 text-yellow-400">
+                <h1 className={`text-6xl md:text-8xl font-bold mb-2 ${
+                  isCorporate 
+                    ? 'text-blue-100' 
+                    : 'text-yellow-400'
+                }`}>
                   {slide.title}
                 </h1>
                 <h2 className="hero-text-primary text-2xl md:text-3xl font-semibold mb-4">
@@ -92,9 +85,13 @@ const HeroCarousel = () => {
                 <ThemedButton 
                   variant="hero-cta"
                   size="lg"
-                  className="px-8 py-3 text-lg"
+                  className={`px-8 py-3 text-lg ${
+                    isCorporate 
+                      ? 'bg-blue-600 hover:bg-blue-700' 
+                      : ''
+                  }`}
                 >
-                  Book Now
+                  {isCorporate ? 'Register Now' : 'Book Now'}
                 </ThemedButton>
               </div>
             </div>

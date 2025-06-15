@@ -4,9 +4,13 @@ import { Star, Clock, MapPin } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Link } from 'react-router-dom';
+import { useCorporateTheme } from '@/components/ui/corporate-theme-provider';
+import { corporateEvents, corporateCategories } from '@/data/corporateData';
 
 const EventsSection = () => {
-  const events = [
+  const { isCorporate } = useCorporateTheme();
+
+  const casualEvents = [
     {
       id: 1,
       title: 'Folk आख्यान',
@@ -65,14 +69,27 @@ const EventsSection = () => {
     }
   ];
 
+  const events = isCorporate ? corporateEvents.slice(0, 5) : casualEvents;
+  const categories = isCorporate ? corporateCategories : ['Theatre', 'Music', 'Dance', 'Comedy', 'Drama', 'Poetry'];
+
   return (
-    <section className="py-12 px-4 bg-gray-50">
+    <section className={`py-12 px-4 ${
+      isCorporate ? 'bg-slate-50' : 'bg-gray-50'
+    }`}>
       <div className="max-w-7xl mx-auto">
         {/* Section Header */}
         <div className="flex justify-between items-center mb-8">
-          <h2 className="text-3xl font-bold text-gray-800">Recommended for you</h2>
+          <h2 className={`text-3xl font-bold ${
+            isCorporate ? 'text-slate-800' : 'text-gray-800'
+          }`}>
+            {isCorporate ? 'Recommended Professional Events' : 'Recommended for you'}
+          </h2>
           <Link to="/events">
-            <Button variant="outline" className="text-red-600 border-red-600 hover:bg-red-50">
+            <Button variant="outline" className={`border-2 hover:bg-opacity-10 ${
+              isCorporate 
+                ? 'text-blue-600 border-blue-600 hover:bg-blue-50' 
+                : 'text-red-600 border-red-600 hover:bg-red-50'
+            }`}>
               See All
             </Button>
           </Link>
@@ -91,8 +108,12 @@ const EventsSection = () => {
                   />
                   
                   {/* Top Recommendation Badge */}
-                  <div className="absolute top-3 left-3 bg-red-600 text-white px-2 py-1 rounded text-xs font-semibold">
-                    TOP RECOMMENDATION
+                  <div className={`absolute top-3 left-3 text-white px-2 py-1 rounded text-xs font-semibold ${
+                    isCorporate 
+                      ? 'bg-blue-600' 
+                      : 'bg-red-600'
+                  }`}>
+                    {isCorporate ? 'PROFESSIONAL PICK' : 'TOP RECOMMENDATION'}
                   </div>
                   
                   {/* Rating Badge */}
@@ -132,9 +153,13 @@ const EventsSection = () => {
                   </div>
 
                   <Button 
-                    className="w-full mt-3 bg-red-600 hover:bg-red-700 text-white transition-colors duration-200"
+                    className={`w-full mt-3 text-white transition-colors duration-200 ${
+                      isCorporate 
+                        ? 'bg-blue-600 hover:bg-blue-700' 
+                        : 'bg-red-600 hover:bg-red-700'
+                    }`}
                   >
-                    Book Now
+                    {isCorporate ? 'Register' : 'Book Now'}
                   </Button>
                 </CardContent>
               </Link>
@@ -144,13 +169,25 @@ const EventsSection = () => {
 
         {/* Categories Section */}
         <div className="mt-16">
-          <h3 className="text-2xl font-bold text-gray-800 mb-6">Browse by Categories</h3>
+          <h3 className={`text-2xl font-bold mb-6 ${
+            isCorporate ? 'text-slate-800' : 'text-gray-800'
+          }`}>
+            {isCorporate ? 'Browse by Professional Categories' : 'Browse by Categories'}
+          </h3>
           <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
-            {['Theatre', 'Music', 'Dance', 'Comedy', 'Drama', 'Poetry'].map((category) => (
+            {categories.map((category) => (
               <Link key={category} to={`/events?category=${category}`}>
-                <Card className="cursor-pointer hover:shadow-md transition-shadow duration-200 bg-gradient-to-br from-red-50 to-orange-50 border-red-100">
+                <Card className={`cursor-pointer hover:shadow-md transition-shadow duration-200 border ${
+                  isCorporate 
+                    ? 'bg-gradient-to-br from-blue-50 to-slate-50 border-blue-100 hover:border-blue-200' 
+                    : 'bg-gradient-to-br from-red-50 to-orange-50 border-red-100 hover:border-red-200'
+                }`}>
                   <CardContent className="p-6 text-center">
-                    <div className="w-12 h-12 bg-red-600 rounded-full mx-auto mb-3 flex items-center justify-center">
+                    <div className={`w-12 h-12 rounded-full mx-auto mb-3 flex items-center justify-center ${
+                      isCorporate 
+                        ? 'bg-blue-600' 
+                        : 'bg-red-600'
+                    }`}>
                       <span className="text-white font-bold text-lg">{category[0]}</span>
                     </div>
                     <h4 className="font-semibold text-gray-800">{category}</h4>
