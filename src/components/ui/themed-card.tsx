@@ -1,9 +1,9 @@
 
 import React from 'react';
-import { Card, CardProps } from '@/components/ui/card';
+import { Card } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
 
-interface ThemedCardProps extends CardProps {
+interface ThemedCardProps extends React.HTMLAttributes<HTMLDivElement> {
   variant?: 'default' | 'show' | 'payment' | 'hero' | 'elevated';
   palette?: boolean;
 }

@@ -1,6 +1,6 @@
 
 import React, { useState } from 'react';
-import { Wheelchair, Users, Crown, Eye } from 'lucide-react';
+import { Accessibility, Users, Crown, Eye } from 'lucide-react';
 
 interface EnhancedSeatComponentProps {
   seatId: string;
@@ -55,7 +55,7 @@ const EnhancedSeatComponent: React.FC<EnhancedSeatComponentProps> = ({
   };
 
   const getSeatIcon = () => {
-    if (accessibility) return <Wheelchair className="h-3 w-3" />;
+    if (accessibility) return <Accessibility className="h-3 w-3" />;
     if (type === 'premium') return <Crown className="h-3 w-3" />;
     if (viewerCount > 0 && status === 'viewing') return <Eye className="h-3 w-3" />;
     return seatId.slice(-1);

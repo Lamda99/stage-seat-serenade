@@ -1,11 +1,13 @@
 
 import React from 'react';
-import { Button, ButtonProps } from '@/components/ui/button';
+import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 
-interface ThemedButtonProps extends ButtonProps {
+interface ThemedButtonProps extends Omit<React.ButtonHTMLAttributes<HTMLButtonElement>, 'variant'> {
   variant?: 'primary' | 'secondary' | 'hero-cta' | 'payment' | 'danger';
   palette?: boolean;
+  size?: 'default' | 'sm' | 'lg' | 'icon';
+  asChild?: boolean;
 }
 
 const ThemedButton: React.FC<ThemedButtonProps> = ({ 
@@ -13,6 +15,8 @@ const ThemedButton: React.FC<ThemedButtonProps> = ({
   variant = 'primary', 
   palette = true,
   children,
+  size = 'default',
+  asChild = false,
   ...props 
 }) => {
   const getThemedClasses = () => {
@@ -32,6 +36,8 @@ const ThemedButton: React.FC<ThemedButtonProps> = ({
   return (
     <Button
       className={cn(getThemedClasses(), className)}
+      size={size}
+      asChild={asChild}
       {...props}
     >
       {children}
