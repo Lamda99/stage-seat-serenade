@@ -7,6 +7,8 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { PaletteProvider } from "@/components/ui/palette-provider";
 import { CorporateThemeProvider } from "@/components/ui/corporate-theme-provider";
 import Index from "./pages/Index";
+import About from "./pages/About";
+import Contact from "./pages/Contact";
 import ShowDetails from "./pages/ShowDetails";
 import EventListing from "./pages/EventListing";
 import BookingConfirmation from "./pages/BookingConfirmation";
@@ -28,6 +30,8 @@ const App = () => (
           <BrowserRouter>
             <Routes>
               <Route path="/" element={<Index />} />
+              <Route path="/about" element={<About />} />
+              <Route path="/contact" element={<Contact />} />
               <Route path="/login" element={<Login />} />
               <Route path="/signup" element={<Signup />} />
               <Route path="/events" element={<EventListing />} />
