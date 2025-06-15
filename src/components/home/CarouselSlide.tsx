@@ -18,11 +18,11 @@ const CarouselSlide: React.FC<CarouselSlideProps> = ({ slide, position, onSlideC
       case 'center':
         return 'transform scale-100 opacity-100 z-30 translate-x-0';
       case 'left':
-        return 'transform scale-75 opacity-70 z-20 -translate-x-80';
+        return 'transform scale-75 opacity-75 z-20 -translate-x-60';
       case 'right':
-        return 'transform scale-75 opacity-70 z-20 translate-x-80';
+        return 'transform scale-75 opacity-75 z-20 translate-x-60';
       default:
-        return 'transform scale-50 opacity-0 z-10';
+        return 'transform scale-50 opacity-0 z-10 translate-x-96';
     }
   };
 

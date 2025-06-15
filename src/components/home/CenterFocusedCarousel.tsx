@@ -41,7 +41,7 @@ const CenterFocusedCarousel = () => {
       />
 
       {/* Slides Container */}
-      <div className="relative w-full h-full flex items-center justify-center">
+      <div className="relative w-full h-full flex items-center justify-center px-20">
         {carouselSlides.map((slide, index) => {
           const position = getSlidePosition(index);
           
