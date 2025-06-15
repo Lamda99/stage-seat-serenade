@@ -18,11 +18,11 @@ const CarouselSlide: React.FC<CarouselSlideProps> = ({ slide, position, onSlideC
       case 'center':
         return 'transform scale-100 opacity-100 z-30 translate-x-0';
       case 'left':
-        return 'transform scale-75 opacity-60 z-20 -translate-x-72';
+        return 'transform scale-75 opacity-25 z-20 -translate-x-96';
       case 'right':
-        return 'transform scale-75 opacity-60 z-20 translate-x-72';
+        return 'transform scale-75 opacity-25 z-20 translate-x-96';
       default:
-        return 'transform scale-50 opacity-0 z-10 translate-x-96';
+        return 'transform scale-50 opacity-0 z-10 translate-x-full';
     }
   };
 
@@ -40,9 +40,6 @@ const CarouselSlide: React.FC<CarouselSlideProps> = ({ slide, position, onSlideC
             alt={slide.title}
             className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
           />
-          
-          {/* Gradient Overlay */}
-          <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
           
           {/* Category Badge */}
           <div className="absolute top-4 left-4 bg-red-600 text-white px-3 py-1 rounded-full text-sm font-semibold">
