@@ -35,50 +35,59 @@ const SeatComponent: React.FC<SeatComponentProps> = ({
     return status === 'selected' ? '#b91c1c' : '#ef4444'; // darker red or lighter red
   };
 
+  const getDarkerShade = (color: string) => {
+    // Create a darker shade for the seat base
+    const colorMap: { [key: string]: string } = {
+      '#dc2626': '#991b1b', // red-800
+      '#9ca3af': '#6b7280', // gray-500
+      '#f59e0b': '#d97706', // amber-600
+      '#10b981': '#059669', // emerald-600
+      '#3b82f6': '#2563eb', // blue-600
+      '#8b5cf6': '#7c3aed', // violet-600
+      '#6b7280': '#4b5563'  // gray-600
+    };
+    return colorMap[color] || '#4b5563';
+  };
+
   return (
     <div 
-      className={`relative w-8 h-6 cursor-pointer transition-all duration-200 ${
+      className={`relative w-8 h-8 cursor-pointer transition-all duration-200 ${
         disabled ? 'cursor-not-allowed opacity-50' : 'hover:scale-110'
       }`}
       onClick={!disabled ? onClick : undefined}
       title={`${seatId} - ${type} (${status})`}
     >
-      {/* Union SVG Background */}
-      <svg
-        className="absolute top-0.5 left-0 w-8 h-5"
-        width="30"
-        height="20"
-        viewBox="0 0 30 20"
-        fill="none"
-        xmlns="http://www.w3.org/2000/svg"
-      >
-        <path
-          d="M3 2C3 0.895431 3.89543 0 5 0H25C26.1046 0 27 0.895431 27 2V14C27 15.1046 26.1046 16 25 16H23V18C23 19.1046 22.1046 20 21 20H9C7.89543 20 7 19.1046 7 18V16H5C3.89543 16 3 15.1046 3 14V2Z"
-          fill="#e5e7eb"
-          stroke="#d1d5db"
-          strokeWidth="0.5"
-        />
-      </svg>
+      {/* Seat Base/Backrest */}
+      <div
+        className="absolute top-0 left-1 w-6 h-6 rounded-md transition-colors duration-200 shadow-sm"
+        style={{
+          backgroundColor: getDarkerShade(getSeatColor()),
+          border: `1px solid ${getDarkerShade(getSeatColor())}`
+        }}
+      />
       
       {/* Seat Cushion */}
       <div
-        className="absolute top-0.5 left-1.5 w-4 h-3.5 rounded-t-sm rounded-b-sm transition-colors duration-200"
+        className="absolute top-3 left-0.5 w-7 h-4 rounded-lg transition-colors duration-200 shadow-md"
         style={{
           backgroundColor: getSeatColor(),
-          borderRadius: '3px 3px 1px 1px'
+          border: `1px solid ${getDarkerShade(getSeatColor())}`,
+          borderRadius: '8px 8px 4px 4px'
         }}
         onMouseEnter={(e) => {
           if (!disabled) {
             e.currentTarget.style.backgroundColor = getHoverColor();
+            e.currentTarget.previousElementSibling!.style.backgroundColor = getDarkerShade(getHoverColor());
           }
         }}
         onMouseLeave={(e) => {
           e.currentTarget.style.backgroundColor = getSeatColor();
+          e.currentTarget.previousElementSibling!.style.backgroundColor = getDarkerShade(getSeatColor());
         }}
       />
       
       {/* Seat Number */}
-      <div className="absolute inset-0 flex items-center justify-center text-[8px] font-bold text-white pointer-events-none">
+      <div className="absolute inset-0 flex items-center justify-center text-[10px] font-bold text-white pointer-events-none z-10">
         {seatId.slice(-1)}
       </div>
     </div>
