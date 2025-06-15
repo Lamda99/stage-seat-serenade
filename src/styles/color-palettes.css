@@ -1,0 +1,426 @@
+
+/* Theater Booking Interface - Comprehensive Color Palette Implementation */
+
+/* =============================================================================
+   MIDNIGHT AURORA PALETTE - Primary Brand Colors
+   Psychology: Sophisticated, trustworthy, premium experience
+   ============================================================================= */
+
+:root[data-palette="midnight-aurora"] {
+  /* Primary Brand Colors */
+  --palette-primary-purple: #2D1B69;
+  --palette-primary-teal: #00D4AA;
+  --palette-background-cream: #F7F1E3;
+  --palette-accent-coral: #FF6B6B;
+  --palette-neutral-charcoal: #2C3E50;
+  
+  /* Gradient Definitions */
+  --palette-primary-gradient: linear-gradient(135deg, #2D1B69 0%, #00D4AA 100%);
+  --palette-diagonal-gradient: linear-gradient(45deg, rgba(45, 27, 105, 0.6) 0%, rgba(0, 212, 170, 0.6) 100%);
+  
+  /* Seat Selection Colors */
+  --seat-available: rgba(0, 212, 170, 0.2);
+  --seat-available-border: #00D4AA;
+  --seat-selected: var(--palette-primary-gradient);
+  --seat-selected-border: #FFFFFF;
+  --seat-occupied: #2C3E50;
+  --seat-occupied-pattern: #455963;
+  --seat-premium: #FF6B6B;
+  --seat-premium-border: #FFD700;
+  --seat-accessible: #00D4AA;
+  --seat-viewing: #F7F1E3;
+  --seat-viewing-border: #2D1B69;
+  
+  /* Payment Interface Colors */
+  --payment-bg: #F7F1E3;
+  --payment-field-default: #E5E7EB;
+  --payment-field-active: #00D4AA;
+  --payment-field-error: #FF6B6B;
+  --payment-field-success: #00D4AA;
+  --payment-button: var(--palette-primary-gradient);
+  --payment-security: #2C3E50;
+  
+  /* Hero Section Colors */
+  --hero-overlay: var(--palette-diagonal-gradient);
+  --hero-primary-text: #FFFFFF;
+  --hero-secondary-text: #F7F1E3;
+  --hero-cta: #FF6B6B;
+  
+  /* Show Cards Colors */
+  --card-bg: #FFFFFF;
+  --card-border: #2D1B69;
+  --card-title: #2C3E50;
+  --card-price: #00D4AA;
+  --card-urgent: #FF6B6B;
+  --card-available: #00D4AA;
+  --card-hover-glow: rgba(0, 212, 170, 0.3);
+}
+
+/* =============================================================================
+   SUNSET CINEMA PALETTE - Warm & Theatrical
+   Psychology: Inviting, entertaining, warm luxury
+   ============================================================================= */
+
+:root[data-palette="sunset-cinema"] {
+  /* Primary Brand Colors */
+  --palette-primary-amber: #FF8C42;
+  --palette-primary-burgundy: #8B1538;
+  --palette-background-champagne: #F4E4BC;
+  --palette-accent-forest: #2C5F2D;
+  --palette-neutral-brown: #3D2914;
+  
+  /* Gradient Definitions */
+  --palette-primary-gradient: linear-gradient(135deg, #FF8C42 0%, #8B1538 100%);
+  --palette-warm-gradient: linear-gradient(45deg, rgba(255, 140, 66, 0.7) 0%, rgba(139, 21, 56, 0.7) 100%);
+  
+  /* Seat Selection Colors */
+  --seat-available: #F4E4BC;
+  --seat-available-border: rgba(255, 140, 66, 0.3);
+  --seat-selected: var(--palette-primary-gradient);
+  --seat-selected-border: #FFD700;
+  --seat-occupied: #3D2914;
+  --seat-occupied-pattern: #5D4A2A;
+  --seat-premium: #8B1538;
+  --seat-premium-border: #FFD700;
+  --seat-accessible: #2C5F2D;
+  --seat-viewing: rgba(255, 140, 66, 0.4);
+  --seat-viewing-border: #8B1538;
+  
+  /* Payment Interface Colors */
+  --payment-bg: #F4E4BC;
+  --payment-field-default: #E5DCC4;
+  --payment-field-active: #FF8C42;
+  --payment-field-error: #2C5F2D;
+  --payment-field-success: #2C5F2D;
+  --payment-button: var(--palette-primary-gradient);
+  --payment-security: #3D2914;
+  
+  /* Hero Section Colors */
+  --hero-overlay: var(--palette-warm-gradient);
+  --hero-primary-text: #FFFFFF;
+  --hero-secondary-text: #F4E4BC;
+  --hero-cta: #8B1538;
+  
+  /* Show Cards Colors */
+  --card-bg: #FFFFFF;
+  --card-border: #FF8C42;
+  --card-title: #3D2914;
+  --card-price: #8B1538;
+  --card-urgent: #FF8C42;
+  --card-available: #2C5F2D;
+  --card-hover-glow: rgba(255, 140, 66, 0.4);
+}
+
+/* =============================================================================
+   ELECTRIC VELVET PALETTE - Premium & Sophisticated
+   Psychology: Exclusive, high-end, modern luxury
+   ============================================================================= */
+
+:root[data-palette="electric-velvet"] {
+  /* Primary Brand Colors */
+  --palette-primary-emerald: #00A86B;
+  --palette-primary-purple: #6B46C1;
+  --palette-background-pearl: #F8F9FA;
+  --palette-accent-gold: #FFD700;
+  --palette-neutral-navy: #1E293B;
+  
+  /* Gradient Definitions */
+  --palette-primary-gradient: linear-gradient(135deg, #00A86B 0%, #6B46C1 100%);
+  --palette-jewel-gradient: linear-gradient(45deg, rgba(0, 168, 107, 0.8) 0%, rgba(107, 70, 193, 0.8) 100%);
+  
+  /* Seat Selection Colors */
+  --seat-available: #F8F9FA;
+  --seat-available-border: rgba(0, 168, 107, 0.4);
+  --seat-selected: var(--palette-primary-gradient);
+  --seat-selected-border: #FFD700;
+  --seat-occupied: #1E293B;
+  --seat-occupied-pattern: #475569;
+  --seat-premium: #6B46C1;
+  --seat-premium-border: #FFD700;
+  --seat-accessible: #00A86B;
+  --seat-viewing: rgba(0, 168, 107, 0.3);
+  --seat-viewing-border: #6B46C1;
+  
+  /* Payment Interface Colors */
+  --payment-bg: #F8F9FA;
+  --payment-field-default: #E2E8F0;
+  --payment-field-active: #00A86B;
+  --payment-field-error: #6B46C1;
+  --payment-field-success: #00A86B;
+  --payment-button: var(--palette-primary-gradient);
+  --payment-security: #1E293B;
+  
+  /* Hero Section Colors */
+  --hero-overlay: var(--palette-jewel-gradient);
+  --hero-primary-text: #FFFFFF;
+  --hero-secondary-text: #F8F9FA;
+  --hero-cta: #6B46C1;
+  
+  /* Show Cards Colors */
+  --card-bg: #FFFFFF;
+  --card-border: #00A86B;
+  --card-title: #1E293B;
+  --card-price: #6B46C1;
+  --card-urgent: #FFD700;
+  --card-available: #00A86B;
+  --card-hover-glow: rgba(0, 168, 107, 0.3);
+}
+
+/* =============================================================================
+   COMMON ANIMATION DEFINITIONS
+   ============================================================================= */
+
+@keyframes seat-pulse {
+  0%, 100% {
+    box-shadow: 0 0 0 0 var(--seat-viewing-border);
+  }
+  50% {
+    box-shadow: 0 0 0 8px rgba(var(--seat-viewing-border), 0.3);
+  }
+}
+
+@keyframes seat-hover-glow {
+  0% {
+    box-shadow: 0 0 0 0 var(--card-hover-glow);
+  }
+  100% {
+    box-shadow: 0 0 20px 5px var(--card-hover-glow);
+  }
+}
+
+@keyframes payment-success {
+  0% {
+    transform: scale(1);
+    opacity: 0;
+  }
+  50% {
+    transform: scale(1.1);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes gradient-shift {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+/* =============================================================================
+   RESPONSIVE DESIGN ADJUSTMENTS
+   ============================================================================= */
+
+@media (max-width: 768px) {
+  :root {
+    /* Enhanced contrast for mobile viewing */
+    --seat-available-border: rgba(var(--seat-available-border), 0.8);
+    --card-hover-glow: rgba(var(--card-hover-glow), 0.5);
+  }
+  
+  /* Increase touch target sizes */
+  .theater-seat {
+    min-width: 32px;
+    min-height: 32px;
+  }
+}
+
+@media (prefers-contrast: high) {
+  :root {
+    /* High contrast mode adjustments */
+    --seat-available-border: currentColor;
+    --seat-selected-border: #FFFFFF;
+    --payment-field-active: currentColor;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  /* Disable animations for users who prefer reduced motion */
+  .seat-pulse,
+  .seat-hover-glow,
+  .payment-success-animation,
+  .gradient-animation {
+    animation: none !important;
+  }
+}
+
+/* =============================================================================
+   UTILITY CLASSES FOR PALETTE APPLICATION
+   ============================================================================= */
+
+.palette-primary-gradient {
+  background: var(--palette-primary-gradient);
+}
+
+.palette-diagonal-overlay {
+  background: var(--hero-overlay);
+}
+
+.seat-available {
+  background-color: var(--seat-available);
+  border: 2px solid var(--seat-available-border);
+}
+
+.seat-selected {
+  background: var(--seat-selected);
+  border: 2px solid var(--seat-selected-border);
+}
+
+.seat-occupied {
+  background-color: var(--seat-occupied);
+  background-image: repeating-linear-gradient(
+    45deg,
+    var(--seat-occupied),
+    var(--seat-occupied) 5px,
+    var(--seat-occupied-pattern) 5px,
+    var(--seat-occupied-pattern) 10px
+  );
+}
+
+.seat-premium {
+  background-color: var(--seat-premium);
+  border: 2px solid var(--seat-premium-border);
+  box-shadow: 0 0 10px rgba(255, 215, 0, 0.3);
+}
+
+.seat-viewing {
+  background-color: var(--seat-viewing);
+  border: 2px solid var(--seat-viewing-border);
+  animation: seat-pulse 2s infinite;
+}
+
+.payment-form-field {
+  background-color: var(--payment-bg);
+  border: 2px solid var(--payment-field-default);
+  transition: all 0.3s ease;
+}
+
+.payment-form-field:focus {
+  border-color: var(--payment-field-active);
+  box-shadow: 0 0 0 3px rgba(var(--payment-field-active), 0.1);
+}
+
+.payment-form-field.error {
+  border-color: var(--payment-field-error);
+}
+
+.payment-form-field.success {
+  border-color: var(--payment-field-success);
+}
+
+.payment-button {
+  background: var(--payment-button);
+  color: white;
+  border: none;
+  transition: all 0.3s ease;
+}
+
+.payment-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+}
+
+.hero-text-primary {
+  color: var(--hero-primary-text);
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+.hero-text-secondary {
+  color: var(--hero-secondary-text);
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+.hero-cta-button {
+  background-color: var(--hero-cta);
+  color: white;
+  transition: all 0.3s ease;
+}
+
+.hero-cta-button:hover {
+  transform: scale(1.05);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+}
+
+.show-card {
+  background-color: var(--card-bg);
+  border: 2px solid transparent;
+  transition: all 0.3s ease;
+}
+
+.show-card:hover {
+  border-color: var(--card-border);
+  box-shadow: 0 0 20px var(--card-hover-glow);
+  transform: translateY(-5px);
+}
+
+.show-card-title {
+  color: var(--card-title);
+}
+
+.show-card-price {
+  color: var(--card-price);
+  font-weight: bold;
+}
+
+.availability-urgent {
+  color: var(--card-urgent);
+  animation: pulse 2s infinite;
+}
+
+.availability-good {
+  color: var(--card-available);
+}
+
+/* =============================================================================
+   SEASONAL AND EVENT-BASED ADAPTATIONS
+   ============================================================================= */
+
+.festival-overlay {
+  position: relative;
+}
+
+.festival-overlay::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: var(--palette-primary-gradient);
+  opacity: 0.1;
+  pointer-events: none;
+}
+
+.diwali-sparkle {
+  background-image: 
+    radial-gradient(2px 2px at 20px 30px, #FFD700, transparent),
+    radial-gradient(2px 2px at 40px 70px, #FFD700, transparent),
+    radial-gradient(1px 1px at 90px 40px, #FFD700, transparent);
+  animation: sparkle 3s ease-in-out infinite;
+}
+
+@keyframes sparkle {
+  0%, 100% { opacity: 0.3; }
+  50% { opacity: 1; }
+}
+
+.premium-event {
+  background: linear-gradient(135deg, var(--palette-primary-gradient), #FFD700);
+  background-size: 200% 200%;
+  animation: gradient-shift 3s ease infinite;
+}
+
+.loading-skeleton {
+  background: var(--palette-primary-gradient);
+  background-size: 200% 200%;
+  animation: gradient-shift 1.5s ease-in-out infinite;
+  opacity: 0.7;
+}

@@ -1,7 +1,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
-import { Button } from '@/components/ui/button';
+import ThemedButton from '@/components/ui/themed-button';
 
 const HeroCarousel = () => {
   const [currentSlide, setCurrentSlide] = useState(0);
@@ -62,35 +62,40 @@ const HeroCarousel = () => {
           <div
             key={slide.id}
             className="w-full h-full flex-shrink-0 relative"
-            style={{
-              backgroundImage: `linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.6)), url(${slide.image})`,
-              backgroundSize: 'cover',
-              backgroundPosition: 'center'
-            }}
           >
+            {/* Background Image */}
+            <div 
+              className="absolute inset-0 bg-cover bg-center"
+              style={{ backgroundImage: `url(${slide.image})` }}
+            />
+            
+            {/* Palette-aware overlay */}
+            <div className="absolute inset-0 palette-diagonal-overlay" />
+            
             <div className="absolute inset-0 flex items-center justify-center">
-              <div className="text-center text-white max-w-4xl px-4">
+              <div className="text-center max-w-4xl px-4">
                 <div className="bg-yellow-500 text-black px-4 py-1 rounded-full text-sm font-semibold mb-4 inline-block">
                   {slide.category}
                 </div>
                 <h1 className="text-6xl md:text-8xl font-bold mb-2 text-yellow-400">
                   {slide.title}
                 </h1>
-                <h2 className="text-2xl md:text-3xl font-semibold mb-4">
+                <h2 className="hero-text-primary text-2xl md:text-3xl font-semibold mb-4">
                   {slide.subtitle}
                 </h2>
-                <p className="text-lg md:text-xl mb-2 opacity-90">
+                <p className="hero-text-secondary text-lg md:text-xl mb-2 opacity-90">
                   {slide.description}
                 </p>
-                <p className="text-base opacity-80 mb-6">
+                <p className="hero-text-secondary text-base opacity-80 mb-6">
                   {slide.director}
                 </p>
-                <Button 
-                  size="lg" 
-                  className="bg-red-600 hover:bg-red-700 text-white px-8 py-3 rounded-lg font-semibold text-lg transition-all duration-300 transform hover:scale-105"
+                <ThemedButton 
+                  variant="hero-cta"
+                  size="lg"
+                  className="px-8 py-3 text-lg"
                 >
                   Book Now
-                </Button>
+                </ThemedButton>
               </div>
             </div>
           </div>
@@ -98,23 +103,23 @@ const HeroCarousel = () => {
       </div>
 
       {/* Navigation Arrows */}
-      <Button
-        variant="outline"
+      <ThemedButton
+        variant="secondary"
         size="icon"
-        className="absolute left-4 top-1/2 transform -translate-y-1/2 bg-white/20 border-white/30 text-white hover:bg-white/30 transition-all duration-300"
+        className="absolute left-4 top-1/2 transform -translate-y-1/2 bg-white/20 border-white/30 text-white hover:bg-white/30"
         onClick={prevSlide}
       >
         <ChevronLeft className="h-6 w-6" />
-      </Button>
+      </ThemedButton>
       
-      <Button
-        variant="outline"
+      <ThemedButton
+        variant="secondary"
         size="icon"
-        className="absolute right-4 top-1/2 transform -translate-y-1/2 bg-white/20 border-white/30 text-white hover:bg-white/30 transition-all duration-300"
+        className="absolute right-4 top-1/2 transform -translate-y-1/2 bg-white/20 border-white/30 text-white hover:bg-white/30"
         onClick={nextSlide}
       >
         <ChevronRight className="h-6 w-6" />
-      </Button>
+      </ThemedButton>
 
       {/* Dots Indicator */}
       <div className="absolute bottom-6 left-1/2 transform -translate-x-1/2 flex space-x-2">
