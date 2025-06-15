@@ -1,16 +1,17 @@
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Search, MapPin, User, Menu, X, Bell, LogOut } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Link } from 'react-router-dom';
+import { useUserProfile } from '@/hooks/useUserProfile';
+import { useLocation } from '@/hooks/useLocation';
 
 const EnhancedHeader = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [selectedCity, setSelectedCity] = useState('Pune');
-  const [user, setUser] = useState(null);
   const [searchQuery, setSearchQuery] = useState('');
+  const { user, signOut } = useUserProfile();
+  const { selectedCity, popularCities, updateSelectedCity, getCurrentLocation } = useLocation();
 
-  const cities = ['Mumbai', 'Delhi', 'Pune', 'Bangalore', 'Chennai', 'Kolkata'];
   const navItems = [
     { name: 'Events', path: '/events' },
     { name: 'Theatre', path: '/events?category=Theatre' },
@@ -19,16 +20,8 @@ const EnhancedHeader = () => {
     { name: 'Comedy', path: '/events?category=Comedy' }
   ];
 
-  useEffect(() => {
-    const savedUser = localStorage.getItem('user');
-    if (savedUser) {
-      setUser(JSON.parse(savedUser));
-    }
-  }, []);
-
-  const handleSignOut = () => {
-    localStorage.removeItem('user');
-    setUser(null);
+  const handleCityChange = (city) => {
+    updateSelectedCity(city);
   };
 
   return (
@@ -44,17 +37,27 @@ const EnhancedHeader = () => {
             
             <div className="flex items-center space-x-4">
               {/* Location Selector */}
-              <div className="flex items-center space-x-1 cursor-pointer hover:bg-white/10 px-2 py-1 rounded transition-colors">
-                <MapPin className="h-4 w-4" />
-                <select 
-                  value={selectedCity} 
-                  onChange={(e) => setSelectedCity(e.target.value)}
-                  className="bg-transparent border-none text-white outline-none cursor-pointer"
+              <div className="flex items-center space-x-2">
+                <div className="flex items-center space-x-1 cursor-pointer hover:bg-white/10 px-2 py-1 rounded transition-colors">
+                  <MapPin className="h-4 w-4" />
+                  <select 
+                    value={selectedCity} 
+                    onChange={(e) => handleCityChange(e.target.value)}
+                    className="bg-transparent border-none text-white outline-none cursor-pointer"
+                  >
+                    {popularCities.map(city => (
+                      <option key={city} value={city} className="text-black">{city}</option>
+                    ))}
+                  </select>
+                </div>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={getCurrentLocation}
+                  className="text-white hover:bg-white/10 text-xs"
                 >
-                  {cities.map(city => (
-                    <option key={city} value={city} className="text-black">{city}</option>
-                  ))}
-                </select>
+                  Use Current
+                </Button>
               </div>
               
               {/* Search Bar */}
@@ -77,11 +80,15 @@ const EnhancedHeader = () => {
                   </Button>
                   
                   <div className="flex items-center space-x-2 hover:bg-white/10 px-2 py-1 rounded transition-colors">
-                    <img 
-                      src={user.picture} 
-                      alt={user.name}
-                      className="w-6 h-6 rounded-full"
-                    />
+                    {user.picture ? (
+                      <img 
+                        src={user.picture} 
+                        alt={user.name}
+                        className="w-6 h-6 rounded-full"
+                      />
+                    ) : (
+                      <User className="h-4 w-4" />
+                    )}
                     <span className="hidden sm:block">{user.name.split(' ')[0]}</span>
                   </div>
                   
@@ -89,7 +96,7 @@ const EnhancedHeader = () => {
                     variant="ghost" 
                     size="sm" 
                     className="text-white hover:bg-white/10"
-                    onClick={handleSignOut}
+                    onClick={signOut}
                   >
                     <LogOut className="h-4 w-4" />
                   </Button>

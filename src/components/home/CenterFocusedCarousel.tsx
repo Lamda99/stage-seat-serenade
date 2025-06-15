@@ -55,16 +55,6 @@ const CenterFocusedCarousel = () => {
           );
         })}
       </div>
-
-      {/* Title Overlay for Center Slide */}
-      <div className="absolute bottom-20 left-1/2 transform -translate-x-1/2 text-center text-white z-40">
-        <h1 className="text-4xl md:text-6xl font-bold mb-2 hero-text-shadow">
-          {carouselSlides[currentIndex].title}
-        </h1>
-        <p className="text-xl md:text-2xl opacity-90 hero-text-shadow">
-          {carouselSlides[currentIndex].director}
-        </p>
-      </div>
     </section>
   );
 };

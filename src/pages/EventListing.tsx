@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Search, Filter, MapPin, Calendar, Star, Clock } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
@@ -8,18 +8,19 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import Header from '../components/layout/Header';
 import Footer from '../components/layout/Footer';
 import { Link } from 'react-router-dom';
+import { useLocation } from '@/hooks/useLocation';
 
 const EventListing = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('all');
-  const [selectedCity, setSelectedCity] = useState('all');
+  const { selectedCity, popularCities, updateSelectedCity } = useLocation();
 
   const events = [
     {
       id: 1,
       title: 'Folk आख्यान',
       subtitle: 'मृगनकं - नाटक',
-      date: '28 Jun 2025',
+      date: '28/06/2025',
       time: '7:00 PM',
       rating: '4.5',
       reviews: '14.3K',
@@ -33,7 +34,7 @@ const EventListing = () => {
     {
       id: 2,
       title: 'श्यासात राजं, ध्यासात राजं',
-      date: '09 Jun 2025',
+      date: '09/06/2025',
       time: '9:30 PM',
       rating: '4.2',
       reviews: '14.3K',
@@ -47,7 +48,7 @@ const EventListing = () => {
     {
       id: 3,
       title: 'Folk लोक',
-      date: '08 Jun 2025',
+      date: '08/06/2025',
       time: '9:30 PM',
       rating: '4.7',
       reviews: '14.3K',
@@ -61,7 +62,7 @@ const EventListing = () => {
     {
       id: 4,
       title: 'Mahapur',
-      date: '14 Jun 2025',
+      date: '14/06/2025',
       time: '8:30 PM',
       rating: '3.8',
       reviews: '1K',
@@ -78,7 +79,7 @@ const EventListing = () => {
     const matchesSearch = event.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          event.venue.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesCategory = selectedCategory === 'all' || event.category === selectedCategory;
-    const matchesCity = selectedCity === 'all' || event.city === selectedCity;
+    const matchesCity = event.city === selectedCity;
     
     return matchesSearch && matchesCategory && matchesCity;
   });
@@ -90,8 +91,8 @@ const EventListing = () => {
       {/* Page Header */}
       <div className="bg-gradient-to-r from-red-600 to-red-800 text-white py-12">
         <div className="max-w-7xl mx-auto px-4">
-          <h1 className="text-4xl font-bold mb-4">Discover Events</h1>
-          <p className="text-xl opacity-90">Find the perfect entertainment experience</p>
+          <h1 className="text-4xl font-bold mb-4">Discover Events in {selectedCity}</h1>
+          <p className="text-xl opacity-90">Find the perfect entertainment experience near you</p>
         </div>
       </div>
 
@@ -123,16 +124,14 @@ const EventListing = () => {
               </SelectContent>
             </Select>
 
-            <Select value={selectedCity} onValueChange={setSelectedCity}>
+            <Select value={selectedCity} onValueChange={updateSelectedCity}>
               <SelectTrigger>
                 <SelectValue placeholder="City" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">All Cities</SelectItem>
-                <SelectItem value="Mumbai">Mumbai</SelectItem>
-                <SelectItem value="Pune">Pune</SelectItem>
-                <SelectItem value="Delhi">Delhi</SelectItem>
-                <SelectItem value="Bangalore">Bangalore</SelectItem>
+                {popularCities.map(city => (
+                  <SelectItem key={city} value={city}>{city}</SelectItem>
+                ))}
               </SelectContent>
             </Select>
 
@@ -146,7 +145,7 @@ const EventListing = () => {
         {/* Results Header */}
         <div className="flex justify-between items-center mb-6">
           <h2 className="text-2xl font-bold text-gray-800">
-            {filteredEvents.length} Events Found
+            {filteredEvents.length} Events Found in {selectedCity}
           </h2>
           <Select defaultValue="date">
             <SelectTrigger className="w-48">
@@ -219,12 +218,11 @@ const EventListing = () => {
         {/* No Results */}
         {filteredEvents.length === 0 && (
           <div className="text-center py-12">
-            <p className="text-gray-500 text-lg">No events found matching your criteria.</p>
+            <p className="text-gray-500 text-lg">No events found in {selectedCity} matching your criteria.</p>
             <Button 
               onClick={() => {
                 setSearchTerm('');
                 setSelectedCategory('all');
-                setSelectedCity('all');
               }}
               variant="outline"
               className="mt-4"

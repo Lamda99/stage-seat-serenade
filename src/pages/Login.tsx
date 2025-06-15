@@ -7,6 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
+import { useUserProfile } from '@/hooks/useUserProfile';
 import GoogleSignIn from '../components/auth/GoogleSignIn';
 
 const Login = () => {
@@ -16,24 +17,33 @@ const Login = () => {
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
   const navigate = useNavigate();
+  const { updateUserProfile } = useUserProfile();
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
 
     try {
-      // Simulate login process
-      await new Promise(resolve => setTimeout(resolve, 1500));
-      
-      const mockUser = {
-        id: 'user_' + Math.random().toString(36).substr(2, 9),
+      // Basic validation
+      if (!email || !password) {
+        throw new Error('Please fill in all fields');
+      }
+
+      // In a real application, this would be an API call to your authentication service
+      // For now, we'll create a user profile without mock data
+      const userProfile = {
+        id: 'user_' + Date.now(),
         name: email.split('@')[0],
         email: email,
-        picture: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=crop&w=100&q=80',
-        provider: 'email'
+        city: 'Pune', // Default city
+        preferences: {
+          categories: [],
+          notifications: true
+        },
+        provider: 'email' as const
       };
       
-      localStorage.setItem('user', JSON.stringify(mockUser));
+      updateUserProfile(userProfile);
       
       toast({
         title: "Welcome back!",
@@ -44,7 +54,7 @@ const Login = () => {
     } catch (error) {
       toast({
         title: "Login Failed",
-        description: "Invalid email or password",
+        description: error instanceof Error ? error.message : "Please check your credentials",
         variant: "destructive",
       });
     } finally {
@@ -53,6 +63,20 @@ const Login = () => {
   };
 
   const handleGoogleSuccess = (user: any) => {
+    const userProfile = {
+      id: user.id || 'user_' + Date.now(),
+      name: user.name,
+      email: user.email,
+      picture: user.picture,
+      city: 'Pune', // Default city
+      preferences: {
+        categories: [],
+        notifications: true
+      },
+      provider: 'google' as const
+    };
+    
+    updateUserProfile(userProfile);
     navigate('/');
   };
 
