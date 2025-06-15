@@ -19,7 +19,7 @@ const queryClient = new QueryClient();
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
-    <PaletteProvider defaultPalette="midnight-aurora">
+    <PaletteProvider defaultPalette="sunset-cinema">
       <TooltipProvider>
         <Toaster />
         <Sonner />
