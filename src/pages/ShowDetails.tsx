@@ -71,7 +71,7 @@ const ShowDetails = () => {
           <div className="mb-8">
             <ThemedButton 
               variant="secondary"
-              className="text-gray-600 hover:text-red-600 mb-4"
+              className="text-gray-600 hover:show-card-price mb-4"
               onClick={() => setShowSeats(false)}
             >
               <ArrowLeft className="h-5 w-5 mr-2" />
@@ -244,7 +244,7 @@ const ShowDetails = () => {
                 
                 <div className="flex justify-between items-center p-3 border rounded-lg show-card hover:bg-gray-50 transition-colors">
                   <div>
-                    <p className="font-semibold text-blue-600">Standard</p>
+                    <p className="font-semibold show-card-price">Standard</p>
                     <p className="text-sm text-gray-600">Good view</p>
                   </div>
                   <p className="font-bold text-lg show-card-price">₹400</p>
@@ -252,7 +252,7 @@ const ShowDetails = () => {
                 
                 <div className="flex justify-between items-center p-3 border rounded-lg show-card hover:bg-gray-50 transition-colors">
                   <div>
-                    <p className="font-semibold text-purple-600">Economy</p>
+                    <p className="font-semibold show-card-price">Economy</p>
                     <p className="text-sm text-gray-600">Standard view</p>
                   </div>
                   <p className="font-bold text-lg show-card-price">₹300</p>

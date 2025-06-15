@@ -28,7 +28,7 @@ const EnhancedHeader = () => {
     <>
       <header className="bg-white shadow-lg border-b sticky top-0 z-50">
         {/* Top Header */}
-        <div className="bg-gradient-to-r from-red-800 to-red-700 text-white py-2 px-4">
+        <div className="palette-primary-gradient text-white py-2 px-4">
           <div className="max-w-7xl mx-auto flex justify-between items-center text-sm">
             <div className="flex items-center space-x-6">
               <span className="hover:text-red-200 cursor-pointer transition-colors">About</span>
@@ -115,7 +115,7 @@ const EnhancedHeader = () => {
                   <Link to="/signup">
                     <Button 
                       size="sm" 
-                      className="bg-white text-red-600 hover:bg-gray-100"
+                      className="bg-white show-card-title hover:bg-gray-100"
                     >
                       Sign Up
                     </Button>
@@ -132,7 +132,7 @@ const EnhancedHeader = () => {
             {/* Logo */}
             <div className="flex items-center">
               <Link to="/">
-                <div className="bg-gradient-to-r from-red-600 to-red-800 text-white px-4 py-2 rounded-lg font-bold text-xl hover:shadow-lg transition-shadow">
+                <div className="palette-primary-gradient text-white px-4 py-2 rounded-lg font-bold text-xl hover:shadow-lg transition-shadow">
                   BookREVent
                 </div>
               </Link>
@@ -144,18 +144,18 @@ const EnhancedHeader = () => {
                 <Link
                   key={item.name}
                   to={item.path}
-                  className="text-gray-700 hover:text-red-600 font-medium transition-colors duration-200 relative group"
+                  className="text-gray-700 hover:show-card-price font-medium transition-colors duration-200 relative group"
                 >
                   {item.name}
-                  <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-red-600 transition-all duration-300 group-hover:w-full"></span>
+                  <span className="absolute bottom-0 left-0 w-0 h-0.5 show-card-price transition-all duration-300 group-hover:w-full"></span>
                 </Link>
               ))}
             </nav>
 
             {/* Right Side Actions */}
             <div className="hidden md:flex items-center space-x-4">
-              <span className="text-gray-600 hover:text-red-600 cursor-pointer transition-colors">Corporate</span>
-              <span className="text-gray-600 hover:text-red-600 cursor-pointer transition-colors">Help</span>
+              <span className="text-gray-600 hover:show-card-price cursor-pointer transition-colors">Corporate</span>
+              <span className="text-gray-600 hover:show-card-price cursor-pointer transition-colors">Help</span>
             </div>
 
             {/* Mobile Menu Button */}
@@ -187,7 +187,7 @@ const EnhancedHeader = () => {
                   <Link
                     key={item.name}
                     to={item.path}
-                    className="text-gray-700 hover:text-red-600 font-medium py-2"
+                    className="text-gray-700 hover:show-card-price font-medium py-2"
                     onClick={() => setIsMenuOpen(false)}
                   >
                     {item.name}
@@ -199,7 +199,7 @@ const EnhancedHeader = () => {
                       <Button variant="outline" className="w-full">Sign In</Button>
                     </Link>
                     <Link to="/signup" className="flex-1">
-                      <Button className="w-full bg-red-600 hover:bg-red-700">Sign Up</Button>
+                      <Button className="w-full palette-primary-gradient hover:opacity-90">Sign Up</Button>
                     </Link>
                   </div>
                 )}

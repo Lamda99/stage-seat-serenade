@@ -20,7 +20,7 @@ const Header = () => {
   return (
     <header className="bg-white shadow-sm border-b">
       {/* Top Header */}
-      <div className="bg-gradient-to-r from-red-800 to-red-700 text-white py-2 px-4">
+      <div className="palette-primary-gradient text-white py-2 px-4">
         <div className="max-w-7xl mx-auto flex justify-between items-center text-sm">
           <div className="flex items-center space-x-6">
             <span>About</span>
@@ -66,7 +66,7 @@ const Header = () => {
           {/* Logo */}
           <div className="flex items-center">
             <Link to="/">
-              <div className="bg-gradient-to-r from-red-600 to-red-800 text-white px-4 py-2 rounded-lg font-bold text-xl">
+              <div className="palette-primary-gradient text-white px-4 py-2 rounded-lg font-bold text-xl">
                 BookREVent
               </div>
             </Link>
@@ -78,7 +78,7 @@ const Header = () => {
               <Link
                 key={item.name}
                 to={item.path}
-                className="text-gray-700 hover:text-red-600 font-medium transition-colors duration-200"
+                className="text-gray-700 hover:show-card-price font-medium transition-colors duration-200"
               >
                 {item.name}
               </Link>
@@ -118,7 +118,7 @@ const Header = () => {
                 <Link
                   key={item.name}
                   to={item.path}
-                  className="text-gray-700 hover:text-red-600 font-medium py-2"
+                  className="text-gray-700 hover:show-card-price font-medium py-2"
                   onClick={() => setIsMenuOpen(false)}
                 >
                   {item.name}
