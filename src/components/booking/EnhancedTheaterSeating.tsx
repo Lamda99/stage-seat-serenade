@@ -1,11 +1,10 @@
-import React, { useState, useMemo, useEffect } from 'react';
+
+import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Users, AlertCircle } from 'lucide-react';
+import { Users, Eye, Star, AlertCircle } from 'lucide-react';
 import SeatComponent from './SeatComponent';
-import { useQuery } from '@tanstack/react-query';
-import { Skeleton } from '@/components/ui/skeleton';
 
 interface Seat {
   id: string;
@@ -16,39 +15,89 @@ interface Seat {
   price: number;
 }
 
-interface ShowWithSeats {
-    seats: Seat[];
-    maxSeatsPerBooking: number;
-}
-
 interface SeatLayoutProps {
-  showId: string;
   onSeatSelect: (seats: Seat[]) => void;
   maxSeats?: number;
 }
 
-const fetchShowSeats = async (showId: string): Promise<ShowWithSeats> => {
-    const response = await fetch(`/api/shows/${showId}`);
-    if (!response.ok) {
-        throw new Error('Failed to fetch show data');
-    }
-    return response.json();
-};
-
 const EnhancedTheaterSeating: React.FC<SeatLayoutProps> = ({ 
-  showId,
   onSeatSelect, 
-  maxSeats: maxSeatsProp
+  maxSeats = 6 
 }) => {
   const [selectedSeats, setSelectedSeats] = useState<Seat[]>([]);
-  
-  const { data: show, isLoading } = useQuery({
-      queryKey: ['show', showId],
-      queryFn: () => fetchShowSeats(showId),
-      enabled: !!showId,
-  });
+  const [hoveredSeat, setHoveredSeat] = useState<string | null>(null);
 
-  const maxSeats = maxSeatsProp || show?.maxSeatsPerBooking || 6;
+  // Generate realistic theater seating layout
+  const generateSeating = (): Seat[][] => {
+    const layout: Seat[][] = [];
+    
+    // Premium section (rows A-C)
+    for (let rowIndex = 0; rowIndex < 3; rowIndex++) {
+      const row: Seat[] = [];
+      const rowLetter = String.fromCharCode(65 + rowIndex); // A, B, C
+      
+      for (let seatNum = 1; seatNum <= 14; seatNum++) {
+        // Create aisle gaps
+        if (seatNum === 5 || seatNum === 11) continue;
+        
+        row.push({
+          id: `${rowLetter}${seatNum}`,
+          row: rowLetter,
+          number: seatNum,
+          type: 'premium',
+          status: Math.random() > 0.8 ? 'occupied' : 'available',
+          price: 500
+        });
+      }
+      layout.push(row);
+    }
+
+    // Standard section (rows D-H)
+    for (let rowIndex = 3; rowIndex < 8; rowIndex++) {
+      const row: Seat[] = [];
+      const rowLetter = String.fromCharCode(65 + rowIndex); // D, E, F, G, H
+      
+      for (let seatNum = 1; seatNum <= 16; seatNum++) {
+        // Create aisle gaps
+        if (seatNum === 5 || seatNum === 13) continue;
+        
+        row.push({
+          id: `${rowLetter}${seatNum}`,
+          row: rowLetter,
+          number: seatNum,
+          type: 'standard',
+          status: Math.random() > 0.7 ? 'occupied' : 'available',
+          price: 400
+        });
+      }
+      layout.push(row);
+    }
+
+    // Economy section (rows I-L)
+    for (let rowIndex = 8; rowIndex < 12; rowIndex++) {
+      const row: Seat[] = [];
+      const rowLetter = String.fromCharCode(65 + rowIndex); // I, J, K, L
+      
+      for (let seatNum = 1; seatNum <= 18; seatNum++) {
+        // Create aisle gaps
+        if (seatNum === 6 || seatNum === 14) continue;
+        
+        row.push({
+          id: `${rowLetter}${seatNum}`,
+          row: rowLetter,
+          number: seatNum,
+          type: 'economy',
+          status: Math.random() > 0.6 ? 'occupied' : 'available',
+          price: 300
+        });
+      }
+      layout.push(row);
+    }
+
+    return layout;
+  };
+
+  const [seatingLayout] = useState<Seat[][]>(generateSeating());
 
   const handleSeatClick = (seat: Seat) => {
     if (seat.status === 'occupied' || seat.status === 'locked') return;
@@ -57,13 +106,14 @@ const EnhancedTheaterSeating: React.FC<SeatLayoutProps> = ({
     let newSelectedSeats: Seat[];
 
     if (isSelected) {
+      // Deselect seat
       newSelectedSeats = selectedSeats.filter(s => s.id !== seat.id);
     } else {
+      // Select seat (check max limit)
       if (selectedSeats.length >= maxSeats) {
-        // TODO: Show a toast notification about max seats
-        return;
+        return; // Max seats reached
       }
-      newSelectedSeats = [...selectedSeats, seat];
+      newSelectedSeats = [...selectedSeats, { ...seat, status: 'selected' }];
     }
 
     setSelectedSeats(newSelectedSeats);
@@ -78,42 +128,6 @@ const EnhancedTheaterSeating: React.FC<SeatLayoutProps> = ({
   const getTotalPrice = (): number => {
     return selectedSeats.reduce((total, seat) => total + seat.price, 0);
   };
-
-  const seatsByRow = useMemo(() => {
-    if (!show) return {};
-    return show.seats.reduce((acc: { [key: string]: Seat[] }, seat) => {
-      if (!acc[seat.row]) {
-        acc[seat.row] = [];
-      }
-      acc[seat.row].push(seat);
-      return acc;
-    }, {});
-  }, [show]);
-
-  const sortedRows = useMemo(() => Object.keys(seatsByRow).sort(), [seatsByRow]);
-  
-  if (isLoading) {
-    return (
-      <div className="max-w-6xl mx-auto p-4 space-y-6">
-        <Skeleton className="h-12 w-1/3 mx-auto" />
-        <Card>
-          <CardContent className="p-6">
-            <div className="space-y-4">
-              {[...Array(10)].map((_, i) => (
-                <div key={i} className="flex justify-center items-center space-x-2">
-                  <Skeleton className="w-8 h-6" />
-                  <div className="flex space-x-1">
-                    {[...Array(15)].map((_, j) => <Skeleton key={j} className="w-6 h-6 rounded" />)}
-                  </div>
-                  <Skeleton className="w-8 h-6" />
-                </div>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-    );
-  }
 
   return (
     <div className="max-w-6xl mx-auto p-4 space-y-6">
@@ -134,15 +148,15 @@ const EnhancedTheaterSeating: React.FC<SeatLayoutProps> = ({
           <div className="grid grid-cols-2 md:grid-cols-5 gap-4 text-sm">
             <div className="flex items-center space-x-2">
               <div className="w-4 h-4 bg-emerald-500 rounded"></div>
-              <span>Premium</span>
+              <span>Premium ₹500</span>
             </div>
             <div className="flex items-center space-x-2">
               <div className="w-4 h-4 bg-blue-500 rounded"></div>
-              <span>Standard</span>
+              <span>Standard ₹400</span>
             </div>
             <div className="flex items-center space-x-2">
               <div className="w-4 h-4 bg-violet-500 rounded"></div>
-              <span>Economy</span>
+              <span>Economy ₹300</span>
             </div>
             <div className="flex items-center space-x-2">
               <div className="w-4 h-4 bg-red-600 rounded"></div>
@@ -160,29 +174,39 @@ const EnhancedTheaterSeating: React.FC<SeatLayoutProps> = ({
       <Card className="bg-white/95 backdrop-blur-sm">
         <CardContent className="p-6">
           <div className="space-y-4">
-            {sortedRows.map((row) => (
-              <div key={row} className="flex justify-center items-center space-x-2">
+            {seatingLayout.map((row, rowIndex) => (
+              <div key={rowIndex} className="flex justify-center items-center space-x-2">
+                {/* Row Label */}
                 <div className="w-8 text-center font-semibold text-gray-600">
-                  {row}
+                  {row[0]?.row}
                 </div>
+
+                {/* Seats */}
                 <div className="flex space-x-1">
-                  {seatsByRow[row]
-                    .sort((a, b) => a.number - b.number)
-                    .map((seat) => {
+                  {row.map((seat, seatIndex) => {
+                    // Add aisle space
+                    const showAisle = seat.number === 6 || seat.number === 7 || seat.number === 12 || seat.number === 13;
+                    
                     return (
-                      <SeatComponent
-                        key={seat.id}
-                        seatId={seat.id}
-                        status={getSeatStatus(seat)}
-                        type={seat.type}
-                        onClick={() => handleSeatClick(seat)}
-                        disabled={seat.status === 'occupied' || seat.status === 'locked'}
-                      />
+                      <React.Fragment key={seat.id}>
+                        {showAisle && seat.number > 6 && (
+                          <div className="w-8"></div>
+                        )}
+                        <SeatComponent
+                          seatId={seat.id}
+                          status={getSeatStatus(seat)}
+                          type={seat.type}
+                          onClick={() => handleSeatClick(seat)}
+                          disabled={seat.status === 'occupied' || seat.status === 'locked'}
+                        />
+                      </React.Fragment>
                     );
                   })}
                 </div>
+
+                {/* Row Label (right side) */}
                 <div className="w-8 text-center font-semibold text-gray-600">
-                  {row}
+                  {row[0]?.row}
                 </div>
               </div>
             ))}

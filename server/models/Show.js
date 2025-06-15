@@ -24,21 +24,8 @@ const seatInstanceSchema = new mongoose.Schema({
 
 const showSchema = new mongoose.Schema({
   title: { type: String, required: true },
-  subtitle: { type: String },
-  description: { type: String },
-  director: { type: String },
-  image: { type: String, required: true },
-  category: { type: String, required: true },
-  language: { type: String },
-  rating: { type: Number, default: 0 },
-  reviews: { type: String },
-  isFeatured: { type: Boolean, default: false },
-  eventType: { type: String, enum: ['casual', 'corporate'], default: 'casual' },
-  displayPrice: { type: String },
   venue: { type: String, required: true },
-  city: { type: String, required: true },
   date: { type: Date, required: true },
-  time: { type: String },
   seatLayout: { 
     type: mongoose.Schema.Types.ObjectId, 
     ref: 'SeatLayout',

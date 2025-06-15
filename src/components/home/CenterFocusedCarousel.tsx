@@ -3,26 +3,9 @@ import React from 'react';
 import CarouselSlide from './CarouselSlide';
 import CarouselNavigation from './CarouselNavigation';
 import { useCarouselControls } from '@/hooks/useCarouselControls';
-import { useQuery } from '@tanstack/react-query';
-import { Show } from '@/types/show';
-import { SlideData } from '@/types/carousel';
-import { Skeleton } from '@/components/ui/skeleton';
-
-const fetchFeaturedShows = async (): Promise<Show[]> => {
-  const response = await fetch('/api/shows?isFeatured=true&eventType=casual');
-  if (!response.ok) {
-    throw new Error('Network response was not ok');
-  }
-  const data = await response.json();
-  return data.slice(0, 5); // Limit to 5 for a carousel
-};
+import { carouselSlides } from '@/data/carouselData';
 
 const CenterFocusedCarousel = () => {
-  const { data: shows = [], isLoading } = useQuery({
-    queryKey: ['featuredShows', 'casual'],
-    queryFn: fetchFeaturedShows,
-  });
-
   const {
     currentIndex,
     isAutoPlaying,
@@ -31,28 +14,7 @@ const CenterFocusedCarousel = () => {
     prevSlide,
     goToSlide,
     getSlidePosition
-  } = useCarouselControls({ totalSlides: shows.length });
-
-  const slidesData: SlideData[] = shows.map((s, index) => ({
-    id: index, // Using index as mock ID for SlideData compatibility
-    title: s.title,
-    subtitle: s.subtitle || '',
-    description: s.description || '',
-    director: s.director || '',
-    image: s.image,
-    category: s.category,
-    price: s.displayPrice || 'N/A',
-    date: new Date(s.date).toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric' }),
-    venue: s.venue,
-  }));
-  
-  if (isLoading) {
-    return (
-      <section className="relative h-96 sm:h-[500px] md:h-[550px] lg:h-[600px] bg-gradient-to-br from-gray-900 via-red-900 to-black overflow-hidden flex items-center justify-center">
-        <Skeleton className="w-96 h-80 rounded-lg bg-gray-700" />
-      </section>
-    );
-  }
+  } = useCarouselControls({ totalSlides: carouselSlides.length });
 
   return (
     <section 
@@ -60,6 +22,7 @@ const CenterFocusedCarousel = () => {
       onMouseEnter={() => setIsAutoPlaying(false)}
       onMouseLeave={() => setIsAutoPlaying(true)}
     >
+      {/* Background Pattern */}
       <div className="absolute inset-0 opacity-10">
         <div 
           className="absolute inset-0"
@@ -73,22 +36,22 @@ const CenterFocusedCarousel = () => {
         onPrevSlide={prevSlide}
         onNextSlide={nextSlide}
         currentIndex={currentIndex}
-        totalSlides={shows.length}
+        totalSlides={carouselSlides.length}
         onGoToSlide={goToSlide}
       />
 
+      {/* Slides Container - Responsive positioning */}
       <div className="relative w-full h-full flex items-center justify-center px-2 sm:px-4 overflow-visible">
         <div className="relative w-full max-w-sm sm:max-w-md md:max-w-4xl lg:max-w-6xl flex items-center justify-center">
-          {shows.map((show, index) => {
+          {carouselSlides.map((slide, index) => {
             const position = getSlidePosition(index);
             
             return (
               <CarouselSlide
-                key={show._id}
-                slide={slidesData[index]}
+                key={slide.id}
+                slide={slide}
                 position={position}
                 onSlideClick={() => goToSlide(index)}
-                showId={show._id}
               />
             );
           })}

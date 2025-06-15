@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Play } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -9,10 +10,9 @@ interface CarouselSlideProps {
   slide: SlideData;
   position: SlidePosition;
   onSlideClick: () => void;
-  showId: string;
 }
 
-const CarouselSlide: React.FC<CarouselSlideProps> = ({ slide, position, onSlideClick, showId }) => {
+const CarouselSlide: React.FC<CarouselSlideProps> = ({ slide, position, onSlideClick }) => {
   const getSlideStyle = (position: SlidePosition) => {
     switch (position) {
       case 'center':
@@ -31,7 +31,7 @@ const CarouselSlide: React.FC<CarouselSlideProps> = ({ slide, position, onSlideC
   return (
     <div
       className={`absolute w-72 h-64 sm:w-80 sm:h-72 md:w-88 md:h-76 lg:w-96 lg:h-80 transition-all duration-700 ease-in-out cursor-pointer ${slideStyle}`}
-      onClick={() => position !== 'center' ? onSlideClick() : undefined}
+      onClick={() => position !== 'center' ? onSlideClick() : null}
     >
       <Card className="h-full bg-white/95 backdrop-blur-sm shadow-2xl hover:shadow-3xl transition-all duration-500 overflow-hidden group">
         <div className="relative h-32 sm:h-36 md:h-40 lg:h-48 overflow-hidden">
@@ -78,7 +78,7 @@ const CarouselSlide: React.FC<CarouselSlideProps> = ({ slide, position, onSlideC
           </div>
           
           {position === 'center' && (
-            <Link to={`/show/${showId}`}>
+            <Link to={`/show/${slide.id}`}>
               <Button className="w-full bg-red-600 hover:bg-red-700 text-white font-semibold transition-all duration-300 transform hover:scale-105 text-sm sm:text-base">
                 Book Now
               </Button>
