@@ -43,9 +43,9 @@ const SeatComponent: React.FC<SeatComponentProps> = ({
       onClick={!disabled ? onClick : undefined}
       title={`${seatId} - ${type} (${status})`}
     >
-      {/* SVG Seat Base */}
+      {/* Union SVG Background */}
       <svg
-        className="absolute top-0 left-0"
+        className="absolute top-0.5 left-0 w-8 h-5"
         width="30"
         height="20"
         viewBox="0 0 30 20"
@@ -62,11 +62,10 @@ const SeatComponent: React.FC<SeatComponentProps> = ({
       
       {/* Seat Cushion */}
       <div
-        className="absolute top-0.5 left-1.5 rounded-t-md rounded-b-sm transition-colors duration-200"
+        className="absolute top-0.5 left-1.5 w-4 h-3.5 rounded-t-sm rounded-b-sm transition-colors duration-200"
         style={{
           backgroundColor: getSeatColor(),
-          width: '16px',
-          height: '14px'
+          borderRadius: '3px 3px 1px 1px'
         }}
         onMouseEnter={(e) => {
           if (!disabled) {
