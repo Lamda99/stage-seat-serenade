@@ -1,14 +1,25 @@
 
 import React, { useState } from 'react';
-import { ArrowLeft, Star, Clock, MapPin, Calendar, Users } from 'lucide-react';
+import { ArrowLeft, Star, Clock, MapPin, Calendar } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import Header from '../components/layout/Header';
+import { Link } from 'react-router-dom';
+import EnhancedHeader from '../components/layout/EnhancedHeader';
 import CastSection from '../components/show/CastSection';
-import SeatSelection from '../components/booking/SeatSelection';
+import EnhancedTheaterSeating from '../components/booking/EnhancedTheaterSeating';
+
+interface Seat {
+  id: string;
+  row: string;
+  number: number;
+  type: 'premium' | 'standard' | 'economy';
+  status: 'available' | 'occupied' | 'selected' | 'locked';
+  price: number;
+}
 
 const ShowDetails = () => {
   const [showSeats, setShowSeats] = useState(false);
+  const [selectedSeats, setSelectedSeats] = useState<Seat[]>([]);
 
   const showData = {
     title: 'Folk लोक',
@@ -26,13 +37,87 @@ const ShowDetails = () => {
     description: 'A beautiful journey through the rich tradition of Marathi folk music and storytelling. This performance brings together classical elements with contemporary presentation, showcasing the cultural heritage of Maharashtra through music, dance, and narrative.'
   };
 
+  const handleSeatSelection = (seats: Seat[]) => {
+    setSelectedSeats(seats);
+  };
+
+  const handleProceedToPayment = () => {
+    if (selectedSeats.length > 0) {
+      // Store booking data and navigate to payment
+      const bookingData = {
+        show: showData,
+        seats: selectedSeats,
+        totalAmount: selectedSeats.reduce((total, seat) => total + seat.price, 0)
+      };
+      localStorage.setItem('currentBooking', JSON.stringify(bookingData));
+      // Navigate to payment page (you would use useNavigate hook in a real implementation)
+      window.location.href = '/payment';
+    }
+  };
+
   if (showSeats) {
-    return <SeatSelection showData={showData} onBack={() => setShowSeats(false)} />;
+    return (
+      <div className="min-h-screen bg-gray-50">
+        <EnhancedHeader />
+        
+        <div className="max-w-7xl mx-auto px-4 py-8">
+          {/* Back Button and Show Info */}
+          <div className="mb-8">
+            <Button 
+              variant="ghost" 
+              className="text-gray-600 hover:text-red-600 mb-4"
+              onClick={() => setShowSeats(false)}
+            >
+              <ArrowLeft className="h-5 w-5 mr-2" />
+              Back to Show Details
+            </Button>
+            
+            <div className="bg-white rounded-lg p-6 shadow-lg">
+              <div className="flex items-center space-x-6">
+                <img 
+                  src={showData.image} 
+                  alt={showData.title}
+                  className="w-24 h-24 object-cover rounded-lg"
+                />
+                <div>
+                  <h1 className="text-2xl font-bold text-gray-800">{showData.title}</h1>
+                  <p className="text-gray-600">{showData.venue}</p>
+                  <p className="text-gray-600">{showData.date}</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Seating Layout */}
+          <EnhancedTheaterSeating 
+            onSeatSelect={handleSeatSelection}
+            maxSeats={6}
+          />
+
+          {/* Proceed Button */}
+          {selectedSeats.length > 0 && (
+            <div className="fixed bottom-0 left-0 right-0 bg-white border-t shadow-lg p-4 z-50">
+              <div className="max-w-7xl mx-auto flex justify-between items-center">
+                <div className="text-lg font-semibold">
+                  {selectedSeats.length} seat{selectedSeats.length > 1 ? 's' : ''} • ₹{selectedSeats.reduce((total, seat) => total + seat.price, 0).toLocaleString('en-IN')}
+                </div>
+                <Button 
+                  onClick={handleProceedToPayment}
+                  className="bg-red-600 hover:bg-red-700 text-white px-8 py-3 text-lg font-semibold"
+                >
+                  Proceed to Payment
+                </Button>
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+    );
   }
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <Header />
+      <EnhancedHeader />
       
       {/* Hero Section */}
       <div className="relative h-96 overflow-hidden">
@@ -44,19 +129,20 @@ const ShowDetails = () => {
         />
         
         <div className="relative z-10 max-w-7xl mx-auto px-4 h-full flex items-center">
-          <Button 
-            variant="ghost" 
-            className="text-white hover:bg-white/10 mb-4 mr-4"
-            onClick={() => window.history.back()}
-          >
-            <ArrowLeft className="h-5 w-5 mr-2" />
-            Back
-          </Button>
+          <Link to="/">
+            <Button 
+              variant="ghost" 
+              className="text-white hover:bg-white/10 mb-4 mr-4"
+            >
+              <ArrowLeft className="h-5 w-5 mr-2" />
+              Back
+            </Button>
+          </Link>
           
           <div className="text-white">
-            <h1 className="text-5xl font-bold mb-2">{showData.title}</h1>
-            <p className="text-xl mb-4">{showData.subtitle}</p>
-            <p className="text-lg opacity-90">{showData.director}</p>
+            <h1 className="text-5xl font-bold mb-2 hero-text-shadow">{showData.title}</h1>
+            <p className="text-xl mb-4 hero-text-shadow">{showData.subtitle}</p>
+            <p className="text-lg opacity-90 hero-text-shadow">{showData.director}</p>
           </div>
         </div>
       </div>
@@ -66,7 +152,7 @@ const ShowDetails = () => {
           {/* Main Content */}
           <div className="lg:col-span-2 space-y-6">
             {/* Show Info */}
-            <Card>
+            <Card className="shadow-lg">
               <CardContent className="p-6">
                 <div className="flex flex-wrap gap-4 mb-6">
                   <div className="flex items-center space-x-2">
@@ -98,7 +184,7 @@ const ShowDetails = () => {
           {/* Booking Sidebar */}
           <div className="space-y-6">
             {/* Venue Details */}
-            <Card>
+            <Card className="shadow-lg">
               <CardContent className="p-6">
                 <h3 className="text-xl font-semibold mb-4">Event Details</h3>
                 
@@ -122,30 +208,30 @@ const ShowDetails = () => {
             </Card>
 
             {/* Ticket Pricing */}
-            <Card>
+            <Card className="shadow-lg">
               <CardContent className="p-6">
                 <h3 className="text-xl font-semibold mb-4">Tickets</h3>
                 
                 <div className="space-y-3">
-                  <div className="flex justify-between items-center p-3 border rounded-lg">
+                  <div className="flex justify-between items-center p-3 border rounded-lg hover:bg-gray-50 transition-colors">
                     <div>
-                      <p className="font-semibold text-green-600">Stall Level 1</p>
+                      <p className="font-semibold text-green-600">Premium</p>
                       <p className="text-sm text-gray-600">Best view</p>
                     </div>
                     <p className="font-bold text-lg">₹500</p>
                   </div>
                   
-                  <div className="flex justify-between items-center p-3 border rounded-lg">
+                  <div className="flex justify-between items-center p-3 border rounded-lg hover:bg-gray-50 transition-colors">
                     <div>
-                      <p className="font-semibold text-yellow-600">Stall Level 2</p>
+                      <p className="font-semibold text-blue-600">Standard</p>
                       <p className="text-sm text-gray-600">Good view</p>
                     </div>
                     <p className="font-bold text-lg">₹400</p>
                   </div>
                   
-                  <div className="flex justify-between items-center p-3 border rounded-lg">
+                  <div className="flex justify-between items-center p-3 border rounded-lg hover:bg-gray-50 transition-colors">
                     <div>
-                      <p className="font-semibold text-purple-600">Balcony</p>
+                      <p className="font-semibold text-purple-600">Economy</p>
                       <p className="text-sm text-gray-600">Standard view</p>
                     </div>
                     <p className="font-bold text-lg">₹300</p>
@@ -153,7 +239,7 @@ const ShowDetails = () => {
                 </div>
 
                 <Button 
-                  className="w-full mt-6 bg-red-600 hover:bg-red-700 text-white py-3 text-lg font-semibold"
+                  className="w-full mt-6 bg-red-600 hover:bg-red-700 text-white py-3 text-lg font-semibold transition-all duration-300 transform hover:scale-105"
                   onClick={() => setShowSeats(true)}
                 >
                   Select Seats

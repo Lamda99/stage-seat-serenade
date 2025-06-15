@@ -2,14 +2,11 @@
 import React, { useState, useEffect } from 'react';
 import { Search, MapPin, User, Menu, X, Bell, LogOut } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
 import { Link } from 'react-router-dom';
-import GoogleSignIn from '../auth/GoogleSignIn';
 
 const EnhancedHeader = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [selectedCity, setSelectedCity] = useState('Pune');
-  const [showSignIn, setShowSignIn] = useState(false);
   const [user, setUser] = useState(null);
   const [searchQuery, setSearchQuery] = useState('');
 
@@ -32,11 +29,6 @@ const EnhancedHeader = () => {
   const handleSignOut = () => {
     localStorage.removeItem('user');
     setUser(null);
-  };
-
-  const handleSignInSuccess = (userData) => {
-    setUser(userData);
-    setShowSignIn(false);
   };
 
   return (
@@ -103,15 +95,25 @@ const EnhancedHeader = () => {
                   </Button>
                 </div>
               ) : (
-                <Button 
-                  variant="ghost" 
-                  size="sm" 
-                  className="text-white hover:bg-white/10"
-                  onClick={() => setShowSignIn(true)}
-                >
-                  <User className="h-4 w-4 mr-1" />
-                  Sign In
-                </Button>
+                <div className="flex items-center space-x-2">
+                  <Link to="/login">
+                    <Button 
+                      variant="ghost" 
+                      size="sm" 
+                      className="text-white hover:bg-white/10"
+                    >
+                      Sign In
+                    </Button>
+                  </Link>
+                  <Link to="/signup">
+                    <Button 
+                      size="sm" 
+                      className="bg-white text-red-600 hover:bg-gray-100"
+                    >
+                      Sign Up
+                    </Button>
+                  </Link>
+                </div>
               )}
             </div>
           </div>
@@ -184,31 +186,21 @@ const EnhancedHeader = () => {
                     {item.name}
                   </Link>
                 ))}
+                {!user && (
+                  <div className="flex space-x-2 pt-4">
+                    <Link to="/login" className="flex-1">
+                      <Button variant="outline" className="w-full">Sign In</Button>
+                    </Link>
+                    <Link to="/signup" className="flex-1">
+                      <Button className="w-full bg-red-600 hover:bg-red-700">Sign Up</Button>
+                    </Link>
+                  </div>
+                )}
               </div>
             </div>
           )}
         </div>
       </header>
-
-      {/* Sign In Modal */}
-      {showSignIn && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="relative">
-            <Button
-              variant="ghost"
-              size="sm"
-              className="absolute -top-2 -right-2 bg-white rounded-full p-2 hover:bg-gray-100"
-              onClick={() => setShowSignIn(false)}
-            >
-              <X className="h-4 w-4" />
-            </Button>
-            <GoogleSignIn 
-              onSuccess={handleSignInSuccess}
-              onError={() => setShowSignIn(false)}
-            />
-          </div>
-        </div>
-      )}
     </>
   );
 };
