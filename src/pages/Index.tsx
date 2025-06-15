@@ -11,13 +11,17 @@ const Index = () => {
   const { isCorporate } = useCorporateTheme();
 
   return (
-    <div className={`min-h-screen ${
+    <div className={`min-h-screen w-full ${
       isCorporate ? 'bg-gradient-to-br from-slate-50 to-blue-50' : 'bg-gradient-to-br from-gray-50 to-orange-50'
     }`}>
       <Header />
-      <CenterFocusedCarousel />
-      <FeaturedEventsCarousel />
-      <EventsSection />
+      <main className="w-full">
+        <CenterFocusedCarousel />
+        <div className="px-4 sm:px-6 lg:px-8">
+          <FeaturedEventsCarousel />
+          <EventsSection />
+        </div>
+      </main>
       <Footer />
     </div>
   );

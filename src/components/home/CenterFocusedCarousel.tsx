@@ -18,7 +18,7 @@ const CenterFocusedCarousel = () => {
 
   return (
     <section 
-      className="relative h-[600px] bg-gradient-to-br from-gray-900 via-red-900 to-black overflow-hidden"
+      className="relative h-96 sm:h-[500px] md:h-[550px] lg:h-[600px] bg-gradient-to-br from-gray-900 via-red-900 to-black overflow-hidden"
       onMouseEnter={() => setIsAutoPlaying(false)}
       onMouseLeave={() => setIsAutoPlaying(true)}
     >
@@ -40,9 +40,9 @@ const CenterFocusedCarousel = () => {
         onGoToSlide={goToSlide}
       />
 
-      {/* Slides Container - Modified for better positioning */}
-      <div className="relative w-full h-full flex items-center justify-center px-4 overflow-visible">
-        <div className="relative w-full max-w-6xl flex items-center justify-center">
+      {/* Slides Container - Responsive positioning */}
+      <div className="relative w-full h-full flex items-center justify-center px-2 sm:px-4 overflow-visible">
+        <div className="relative w-full max-w-sm sm:max-w-md md:max-w-4xl lg:max-w-6xl flex items-center justify-center">
           {carouselSlides.map((slide, index) => {
             const position = getSlidePosition(index);
             
