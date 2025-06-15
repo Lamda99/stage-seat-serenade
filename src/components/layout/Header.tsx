@@ -2,13 +2,20 @@
 import React, { useState } from 'react';
 import { Search, MapPin, User, Menu, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { Link } from 'react-router-dom';
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [selectedCity, setSelectedCity] = useState('Pune');
 
   const cities = ['Mumbai', 'Delhi', 'Pune', 'Bangalore', 'Chennai', 'Kolkata'];
-  const navItems = ['Events', 'Play', 'Activity', 'Music', 'Sports'];
+  const navItems = [
+    { name: 'Events', path: '/events' },
+    { name: 'Play', path: '/events?category=Play' },
+    { name: 'Music', path: '/events?category=Music' },
+    { name: 'Theatre', path: '/events?category=Theatre' },
+    { name: 'Sports', path: '/events?category=Sports' }
+  ];
 
   return (
     <header className="bg-white shadow-sm border-b">
@@ -58,21 +65,23 @@ const Header = () => {
         <div className="max-w-7xl mx-auto flex justify-between items-center">
           {/* Logo */}
           <div className="flex items-center">
-            <div className="bg-gradient-to-r from-red-600 to-red-800 text-white px-4 py-2 rounded-lg font-bold text-xl">
-              BookREVent
-            </div>
+            <Link to="/">
+              <div className="bg-gradient-to-r from-red-600 to-red-800 text-white px-4 py-2 rounded-lg font-bold text-xl">
+                BookREVent
+              </div>
+            </Link>
           </div>
 
           {/* Desktop Navigation */}
           <nav className="hidden md:flex items-center space-x-8">
             {navItems.map((item) => (
-              <a
-                key={item}
-                href="#"
+              <Link
+                key={item.name}
+                to={item.path}
                 className="text-gray-700 hover:text-red-600 font-medium transition-colors duration-200"
               >
-                {item}
-              </a>
+                {item.name}
+              </Link>
             ))}
           </nav>
 
@@ -106,13 +115,14 @@ const Header = () => {
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-500" />
               </div>
               {navItems.map((item) => (
-                <a
-                  key={item}
-                  href="#"
+                <Link
+                  key={item.name}
+                  to={item.path}
                   className="text-gray-700 hover:text-red-600 font-medium py-2"
+                  onClick={() => setIsMenuOpen(false)}
                 >
-                  {item}
-                </a>
+                  {item.name}
+                </Link>
               ))}
             </div>
           </div>
