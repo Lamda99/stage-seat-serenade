@@ -76,13 +76,21 @@ const SeatComponent: React.FC<SeatComponentProps> = ({
         }}
         onMouseEnter={(e) => {
           if (!disabled) {
-            e.currentTarget.style.backgroundColor = getHoverColor();
-            e.currentTarget.previousElementSibling!.style.backgroundColor = getDarkerShade(getHoverColor());
+            const target = e.currentTarget as HTMLElement;
+            const previous = target.previousElementSibling as HTMLElement;
+            target.style.backgroundColor = getHoverColor();
+            if (previous) {
+              previous.style.backgroundColor = getDarkerShade(getHoverColor());
+            }
           }
         }}
         onMouseLeave={(e) => {
-          e.currentTarget.style.backgroundColor = getSeatColor();
-          e.currentTarget.previousElementSibling!.style.backgroundColor = getDarkerShade(getSeatColor());
+          const target = e.currentTarget as HTMLElement;
+          const previous = target.previousElementSibling as HTMLElement;
+          target.style.backgroundColor = getSeatColor();
+          if (previous) {
+            previous.style.backgroundColor = getDarkerShade(getSeatColor());
+          }
         }}
       />
       

@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { ArrowLeft, Star, Clock, MapPin, Calendar } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -6,7 +5,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Link } from 'react-router-dom';
 import EnhancedHeader from '../components/layout/EnhancedHeader';
 import CastSection from '../components/show/CastSection';
-import EnhancedTheaterSeating from '../components/booking/EnhancedTheaterSeating';
+import RealTimeTheaterSeating from '../components/booking/RealTimeTheaterSeating';
 
 interface Seat {
   id: string;
@@ -20,6 +19,10 @@ interface Seat {
 const ShowDetails = () => {
   const [showSeats, setShowSeats] = useState(false);
   const [selectedSeats, setSelectedSeats] = useState<Seat[]>([]);
+
+  // For demo purposes, we'll use a static show ID
+  // In a real app, this would come from the URL params
+  const showId = "demo-show-id";
 
   const showData = {
     title: 'Folk लोक',
@@ -88,8 +91,9 @@ const ShowDetails = () => {
             </div>
           </div>
 
-          {/* Seating Layout */}
-          <EnhancedTheaterSeating 
+          {/* Real-Time Seating Layout */}
+          <RealTimeTheaterSeating 
+            showId={showId}
             onSeatSelect={handleSeatSelection}
             maxSeats={6}
           />
@@ -242,7 +246,7 @@ const ShowDetails = () => {
                   className="w-full mt-6 bg-red-600 hover:bg-red-700 text-white py-3 text-lg font-semibold transition-all duration-300 transform hover:scale-105"
                   onClick={() => setShowSeats(true)}
                 >
-                  Select Seats
+                  Select Seats (Real-Time)
                 </Button>
               </CardContent>
             </Card>
