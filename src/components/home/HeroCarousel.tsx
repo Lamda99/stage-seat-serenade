@@ -74,10 +74,10 @@ const HeroCarousel = () => {
             
             <div className="absolute inset-0 flex items-center justify-center">
               <div className="text-center max-w-4xl px-4">
-                <div className="show-card-price bg-white text-black px-4 py-1 rounded-full text-sm font-semibold mb-4 inline-block">
+                <div className="bg-yellow-500 text-black px-4 py-1 rounded-full text-sm font-semibold mb-4 inline-block">
                   {slide.category}
                 </div>
-                <h1 className="text-6xl md:text-8xl font-bold mb-2 hero-text-primary">
+                <h1 className="text-6xl md:text-8xl font-bold mb-2 text-yellow-400">
                   {slide.title}
                 </h1>
                 <h2 className="hero-text-primary text-2xl md:text-3xl font-semibold mb-4">

@@ -45,30 +45,20 @@ export const PaletteProvider: React.FC<PaletteProviderProps> = ({
   const [currentPalette, setCurrentPalette] = useState<PaletteType>(defaultPalette);
 
   useEffect(() => {
-    // Check if there's a saved palette preference
-    const savedPalette = localStorage.getItem('theater-booking-palette') as PaletteType;
-    
-    // If a defaultPalette is explicitly provided and it's different from saved,
-    // prioritize the defaultPalette and update localStorage
-    if (defaultPalette && (!savedPalette || savedPalette !== defaultPalette)) {
-      setCurrentPalette(defaultPalette);
-      localStorage.setItem('theater-booking-palette', defaultPalette);
-    } else if (savedPalette && savedPalette in paletteConfigs) {
-      setCurrentPalette(savedPalette);
-    } else {
-      // Fallback to defaultPalette
-      setCurrentPalette(defaultPalette);
-      localStorage.setItem('theater-booking-palette', defaultPalette);
-    }
-  }, [defaultPalette]);
-
-  useEffect(() => {
     // Apply palette to document root
     document.documentElement.setAttribute('data-palette', currentPalette);
     
     // Store user preference
     localStorage.setItem('theater-booking-palette', currentPalette);
   }, [currentPalette]);
+
+  useEffect(() => {
+    // Load saved palette preference
+    const savedPalette = localStorage.getItem('theater-booking-palette') as PaletteType;
+    if (savedPalette && savedPalette in paletteConfigs) {
+      setCurrentPalette(savedPalette);
+    }
+  }, []);
 
   const setPalette = (palette: PaletteType) => {
     setCurrentPalette(palette);
