@@ -40,20 +40,22 @@ const CenterFocusedCarousel = () => {
         onGoToSlide={goToSlide}
       />
 
-      {/* Slides Container */}
-      <div className="relative w-full h-full flex items-center justify-center px-20">
-        {carouselSlides.map((slide, index) => {
-          const position = getSlidePosition(index);
-          
-          return (
-            <CarouselSlide
-              key={slide.id}
-              slide={slide}
-              position={position}
-              onSlideClick={() => goToSlide(index)}
-            />
-          );
-        })}
+      {/* Slides Container - Modified for better positioning */}
+      <div className="relative w-full h-full flex items-center justify-center px-4 overflow-visible">
+        <div className="relative w-full max-w-6xl flex items-center justify-center">
+          {carouselSlides.map((slide, index) => {
+            const position = getSlidePosition(index);
+            
+            return (
+              <CarouselSlide
+                key={slide.id}
+                slide={slide}
+                position={position}
+                onSlideClick={() => goToSlide(index)}
+              />
+            );
+          })}
+        </div>
       </div>
     </section>
   );
