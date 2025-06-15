@@ -17,7 +17,7 @@ const Index = () => {
       <Header />
       <main className="w-full">
         <CenterFocusedCarousel />
-        <div className="px-4 sm:px-6 lg:px-8">
+        <div className="px-2 xs:px-4 sm:px-6 md:px-8 lg:px-12 xl:px-16 2xl:px-20 3xl:px-24 4xl:px-32 ultrawide:px-40">
           <FeaturedEventsCarousel />
           <EventsSection />
         </div>
