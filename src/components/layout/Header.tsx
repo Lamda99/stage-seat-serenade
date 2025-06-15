@@ -77,18 +77,25 @@ const Header = () => {
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-500" />
             </div>
             
-            {/* Corporate Theme Toggle */}
-            <CorporateToggle />
-            
             {/* User Actions */}
             <div className="flex items-center space-x-3">
               <Button variant="ghost" size="sm" className="text-white hover:bg-white/10">
                 <Bell className="h-4 w-4" />
               </Button>
               
+              {/* Sign In and Sign Up buttons moved here */}
               <Link to="/login">
                 <Button variant="ghost" size="sm" className="text-white hover:bg-white/10">
-                  <User className="h-4 w-4" />
+                  Sign In
+                </Button>
+              </Link>
+              <Link to="/signup">
+                <Button size="sm" className={`font-semibold transition-all duration-300 ${
+                  isCorporate 
+                    ? 'bg-blue-600 hover:bg-blue-700' 
+                    : 'bg-red-600 hover:bg-red-700'
+                }`}>
+                  Sign Up
                 </Button>
               </Link>
             </div>
@@ -132,22 +139,9 @@ const Header = () => {
             ))}
           </nav>
 
-          {/* Right Side Actions */}
+          {/* Corporate Theme Toggle moved here */}
           <div className="hidden lg:flex items-center space-x-6">
-            <Link to="/login">
-              <Button variant="outline" className="border-gray-300 hover:border-gray-400">
-                Sign In
-              </Button>
-            </Link>
-            <Link to="/signup">
-              <Button className={`font-semibold transition-all duration-300 ${
-                isCorporate 
-                  ? 'bg-blue-600 hover:bg-blue-700' 
-                  : 'bg-red-600 hover:bg-red-700'
-              }`}>
-                Sign Up
-              </Button>
-            </Link>
+            <CorporateToggle />
           </div>
 
           {/* Mobile Menu Button */}
@@ -193,20 +187,9 @@ const Header = () => {
                 </Link>
               ))}
               
-              {/* Mobile Auth Buttons */}
-              <div className="flex space-x-4 pt-4">
-                <Link to="/login" className="flex-1">
-                  <Button variant="outline" className="w-full">Sign In</Button>
-                </Link>
-                <Link to="/signup" className="flex-1">
-                  <Button className={`w-full ${
-                    isCorporate 
-                      ? 'bg-blue-600 hover:bg-blue-700' 
-                      : 'bg-red-600 hover:bg-red-700'
-                  }`}>
-                    Sign Up
-                  </Button>
-                </Link>
+              {/* Mobile Toggle */}
+              <div className="pt-4">
+                <CorporateToggle />
               </div>
             </div>
           </div>
