@@ -1,119 +1,59 @@
 
-import React, { useState, useEffect } from 'react';
-import { ChevronLeft, ChevronRight } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-
-interface SlideItem {
-  id: number;
-  image: string;
-  alt: string;
-}
+import React from 'react';
+import CarouselSlide from './CarouselSlide';
+import CarouselNavigation from './CarouselNavigation';
+import { useCarouselControls } from '@/hooks/useCarouselControls';
+import { carouselSlides } from '@/data/carouselData';
 
 const CenterFocusedCarousel = () => {
-  const [currentIndex, setCurrentIndex] = useState(0);
-  const [isAutoPlaying, setIsAutoPlaying] = useState(true);
-
-  const slideItems: SlideItem[] = [
-    {
-      id: 1,
-      image: '/lovable-uploads/e5479e49-09fa-4a33-bcf6-dce80d81d476.png',
-      alt: 'Folk लोक Cultural Event'
-    },
-    {
-      id: 2,
-      image: 'https://images.unsplash.com/photo-1605810230434-7631ac76ec81?auto=format&fit=crop&w=1920&q=80',
-      alt: 'Cultural Performance'
-    },
-    {
-      id: 3,
-      image: 'https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?auto=format&fit=crop&w=1920&q=80',
-      alt: 'Theater Event'
-    }
-  ];
-
-  const nextSlide = () => {
-    setCurrentIndex((prev) => (prev + 1) % slideItems.length);
-  };
-
-  const prevSlide = () => {
-    setCurrentIndex((prev) => (prev - 1 + slideItems.length) % slideItems.length);
-  };
-
-  const goToSlide = (index: number) => {
-    setCurrentIndex(index);
-  };
-
-  useEffect(() => {
-    if (!isAutoPlaying) return;
-    
-    const timer = setInterval(() => {
-      nextSlide();
-    }, 5000);
-    
-    return () => clearInterval(timer);
-  }, [isAutoPlaying, currentIndex]);
+  const {
+    currentIndex,
+    isAutoPlaying,
+    setIsAutoPlaying,
+    nextSlide,
+    prevSlide,
+    goToSlide,
+    getSlidePosition
+  } = useCarouselControls({ totalSlides: carouselSlides.length });
 
   return (
     <section 
-      className="py-8 px-4 bg-gray-50"
+      className="relative h-[600px] bg-gradient-to-br from-gray-900 via-red-900 to-black overflow-hidden"
       onMouseEnter={() => setIsAutoPlaying(false)}
       onMouseLeave={() => setIsAutoPlaying(true)}
     >
-      <div className="max-w-6xl mx-auto">
-        {/* Main Carousel Container */}
-        <div className="relative overflow-hidden rounded-[10px] h-[274px]">
-          <div 
-            className="flex transition-transform duration-500 ease-in-out h-full"
-            style={{ transform: `translateX(-${currentIndex * 100}%)` }}
-          >
-            {slideItems.map((slide) => (
-              <div
-                key={slide.id}
-                className="w-full h-full flex-shrink-0"
-              >
-                <img
-                  src={slide.image}
-                  alt={slide.alt}
-                  className="w-full h-full object-cover rounded-[10px]"
-                />
-              </div>
-            ))}
-          </div>
+      {/* Background Pattern */}
+      <div className="absolute inset-0 opacity-10">
+        <div 
+          className="absolute inset-0"
+          style={{
+            backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.1'%3E%3Ccircle cx='30' cy='30' r='2'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`
+          }}
+        ></div>
+      </div>
 
-          {/* Navigation Arrows */}
-          <Button
-            variant="secondary"
-            size="icon"
-            className="absolute left-4 top-1/2 transform -translate-y-1/2 bg-white/20 border-white/30 text-white hover:bg-white/30 z-10"
-            onClick={prevSlide}
-          >
-            <ChevronLeft className="h-5 w-5" />
-          </Button>
+      <CarouselNavigation
+        onPrevSlide={prevSlide}
+        onNextSlide={nextSlide}
+        currentIndex={currentIndex}
+        totalSlides={carouselSlides.length}
+        onGoToSlide={goToSlide}
+      />
+
+      {/* Slides Container */}
+      <div className="relative w-full h-full flex items-center justify-center">
+        {carouselSlides.map((slide, index) => {
+          const position = getSlidePosition(index);
           
-          <Button
-            variant="secondary"
-            size="icon"
-            className="absolute right-4 top-1/2 transform -translate-y-1/2 bg-white/20 border-white/30 text-white hover:bg-white/30 z-10"
-            onClick={nextSlide}
-          >
-            <ChevronRight className="h-5 w-5" />
-          </Button>
-        </div>
-
-        {/* Dots Indicator */}
-        <div className="flex justify-center mt-4 space-x-2">
-          {slideItems.map((_, index) => (
-            <button
-              key={index}
-              className={`w-3 h-3 rounded-full transition-all duration-300 ${
-                index === currentIndex 
-                  ? 'bg-red-600 scale-110' 
-                  : 'bg-gray-300 hover:bg-gray-400'
-              }`}
-              onClick={() => goToSlide(index)}
+          return (
+            <CarouselSlide
+              key={slide.id}
+              slide={slide}
+              position={position}
+              onSlideClick={() => goToSlide(index)}
             />
-          ))}
-        </div>
+          );
+        })}
       </div>
     </section>
   );
