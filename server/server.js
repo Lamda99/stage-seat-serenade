@@ -14,9 +14,20 @@ const { initializeDefaultLayouts } = require('./utils/layoutTemplates');
 
 const app = express();
 const server = http.createServer(app);
+
+// Add Codespaces URLs to CORS configuration
+const allowedOrigins = [
+  "http://localhost:8080", 
+  "http://localhost:5173", 
+  "http://localhost:3000",
+  "https://literate-garbanzo-vxpjr94vw76hpvqg-8080.app.github.dev",
+  "https://literate-garbanzo-vxpjr94vw76hpvqg-5173.app.github.dev",
+  "https://literate-garbanzo-vxpjr94vw76hpvqg-3000.app.github.dev"
+];
+
 const io = socketIo(server, {
   cors: {
-    origin: ["http://localhost:8080", "http://localhost:5173", "http://localhost:3000"],
+    origin: allowedOrigins,
     methods: ["GET", "POST", "PUT", "DELETE"],
     credentials: true
   }
@@ -27,7 +38,7 @@ app.use(helmet({
   crossOriginEmbedderPolicy: false
 }));
 app.use(cors({
-  origin: ["http://localhost:8080", "http://localhost:5173", "http://localhost:3000"],
+  origin: allowedOrigins,
   credentials: true
 }));
 app.use(express.json());
