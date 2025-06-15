@@ -1,7 +1,7 @@
 
 import React from 'react';
 import Header from '../components/layout/Header';
-import HeroCarousel from '../components/home/HeroCarousel';
+import CenterFocusedCarousel from '../components/home/CenterFocusedCarousel';
 import FeaturedEventsCarousel from '../components/home/FeaturedEventsCarousel';
 import EventsSection from '../components/home/EventsSection';
 import Footer from '../components/layout/Footer';
@@ -15,7 +15,7 @@ const Index = () => {
       isCorporate ? 'bg-gradient-to-br from-slate-50 to-blue-50' : 'bg-gradient-to-br from-gray-50 to-orange-50'
     }`}>
       <Header />
-      <HeroCarousel />
+      <CenterFocusedCarousel />
       <FeaturedEventsCarousel />
       <EventsSection />
       <Footer />
