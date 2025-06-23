@@ -1,6 +1,5 @@
-
 import React from 'react';
-import Header from '../components/layout/Header';
+import EnhancedHeader from '../components/layout/EnhancedHeader';
 import Footer from '../components/layout/Footer';
 import ThemedCard from '@/components/ui/themed-card';
 import ThemedButton from '@/components/ui/themed-button';
@@ -45,8 +44,8 @@ const About = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <Header />
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-orange-50">
+      <EnhancedHeader />
       
       {/* Hero Section */}
       <section className={`py-20 ${

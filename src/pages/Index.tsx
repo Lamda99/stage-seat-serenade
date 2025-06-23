@@ -1,6 +1,5 @@
-
 import React from 'react';
-import Header from '../components/layout/Header';
+import EnhancedHeader from '../components/layout/EnhancedHeader';
 import CenterFocusedCarousel from '../components/home/CenterFocusedCarousel';
 import FeaturedEventsCarousel from '../components/home/FeaturedEventsCarousel';
 import EventsSection from '../components/home/EventsSection';
@@ -14,7 +13,7 @@ const Index = () => {
     <div className={`min-h-screen w-full ${
       isCorporate ? 'bg-gradient-to-br from-slate-50 to-blue-50' : 'bg-gradient-to-br from-gray-50 to-orange-50'
     }`}>
-      <Header />
+      <EnhancedHeader />
       <main className="w-full">
         <CenterFocusedCarousel />
         <div className="px-2 xs:px-4 sm:px-6 md:px-8 lg:px-12 xl:px-16 2xl:px-20 3xl:px-24 4xl:px-32 ultrawide:px-40">
