@@ -1,11 +1,10 @@
-
 import React, { useState, useEffect } from 'react';
 import { Search, Filter, MapPin, Calendar, Star, Clock } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import Header from '../components/layout/Header';
+import EnhancedHeader from '../components/layout/EnhancedHeader';
 import Footer from '../components/layout/Footer';
 import { Link } from 'react-router-dom';
 import { useLocation } from '@/hooks/useLocation';
@@ -92,7 +91,7 @@ const EventListing = () => {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <Header />
+      <EnhancedHeader />
       
       {/* Page Header */}
       <div className={`text-white py-12 ${

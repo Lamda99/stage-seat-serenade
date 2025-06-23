@@ -1,10 +1,9 @@
-
 import React from 'react';
 import { CheckCircle, Download, Calendar, MapPin, Clock, Users, CreditCard } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
-import Header from '../components/layout/Header';
+import EnhancedHeader from '../components/layout/EnhancedHeader';
 import { useLocation, Link } from 'react-router-dom';
 
 const BookingSuccess = () => {
@@ -24,7 +23,7 @@ const BookingSuccess = () => {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <Header />
+      <EnhancedHeader />
       
       <div className="max-w-3xl mx-auto px-4 py-8">
         {/* Success Header */}

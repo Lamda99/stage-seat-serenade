@@ -1,97 +1,38 @@
-
-import { useState, useEffect } from 'react';
+import { useMemo } from 'react';
+import { useAuth } from '@/context/useAuth';
 
 export interface UserProfile {
   id: string;
   name: string;
-  email: string;
-  phone?: string;
-  picture?: string;
-  city: string;
-  preferences: {
-    categories: string[];
-    notifications: boolean;
-  };
-  provider: 'email' | 'google';
-}
-
-export interface BookingHistory {
-  id: string;
-  showId: string;
-  showTitle: string;
-  showDate: string;
-  showTime: string;
-  venue: string;
-  seats: string[];
-  totalAmount: number;
-  paymentStatus: 'completed' | 'pending' | 'failed' | 'refunded';
-  bookingDate: string;
-  ticketNumber: string;
+  email: string | null;
+  phone?: string | null;
+  picture?: string | null;
+  provider: 'email' | 'google' | 'phone';
 }
 
 export const useUserProfile = () => {
-  const [user, setUser] = useState<UserProfile | null>(null);
-  const [bookingHistory, setBookingHistory] = useState<BookingHistory[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const { user, loading } = useAuth();
 
-  useEffect(() => {
-    loadUserData();
-  }, []);
+  const profile = useMemo(() => {
+    if (!user) return null;
 
-  const loadUserData = () => {
-    setIsLoading(true);
-    try {
-      const savedUser = localStorage.getItem('user');
-      const savedBookings = localStorage.getItem('bookingHistory');
-      
-      if (savedUser) {
-        setUser(JSON.parse(savedUser));
-      }
-      
-      if (savedBookings) {
-        setBookingHistory(JSON.parse(savedBookings));
-      }
-    } catch (error) {
-      console.error('Error loading user data:', error);
-    } finally {
-      setIsLoading(false);
-    }
-  };
+    const providerId = user.providerData[0]?.providerId || '';
+    const provider = providerId.includes('google.com') ? 'google' 
+                  : providerId.includes('phone') ? 'phone' 
+                  : 'email';
 
-  const updateUserProfile = (updatedUser: UserProfile) => {
-    setUser(updatedUser);
-    localStorage.setItem('user', JSON.stringify(updatedUser));
-  };
-
-  const addBooking = (booking: BookingHistory) => {
-    const updatedBookings = [booking, ...bookingHistory];
-    setBookingHistory(updatedBookings);
-    localStorage.setItem('bookingHistory', JSON.stringify(updatedBookings));
-  };
-
-  const updateBookingStatus = (bookingId: string, status: BookingHistory['paymentStatus']) => {
-    const updatedBookings = bookingHistory.map(booking =>
-      booking.id === bookingId ? { ...booking, paymentStatus: status } : booking
-    );
-    setBookingHistory(updatedBookings);
-    localStorage.setItem('bookingHistory', JSON.stringify(updatedBookings));
-  };
-
-  const signOut = () => {
-    setUser(null);
-    setBookingHistory([]);
-    localStorage.removeItem('user');
-    localStorage.removeItem('bookingHistory');
-  };
+    return {
+      id: user.uid,
+      name: user.displayName || user.email?.split('@')[0] || 'User',
+      email: user.email,
+      phone: user.phoneNumber,
+      picture: user.photoURL,
+      provider: provider as 'email' | 'google' | 'phone'
+    };
+  }, [user]);
 
   return {
-    user,
-    bookingHistory,
-    isLoading,
-    updateUserProfile,
-    addBooking,
-    updateBookingStatus,
-    signOut,
-    loadUserData
+    user: profile,
+    isLoading: loading
   };
 };

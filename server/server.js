@@ -41,6 +41,18 @@ app.get('/api/health', (req, res) => {
   });
 });
 
+// Add this after your middleware setup and before other routes
+app.get('/', (req, res) => {
+  res.json({ 
+    message: 'Theater Booking API Server',
+    endpoints: {
+      health: '/api/health',
+      shows: '/api/shows',
+      seatLayouts: '/api/seat-layouts'
+    }
+  });
+});
+
 // Make io available to routes
 app.use((req, res, next) => {
   req.io = io;

@@ -1,4 +1,3 @@
-
 import { useState, useEffect, useCallback } from 'react';
 import { io, Socket } from 'socket.io-client';
 
@@ -28,7 +27,7 @@ interface SeatUpdate {
   lockedBy?: string;
 }
 
-const useRealTimeSeats = (showId: string) => {
+const useRealTimeSeats = () => {
   const [socket, setSocket] = useState<Socket | null>(null);
   const [show, setShow] = useState<Show | null>(null);
   const [selectedSeats, setSelectedSeats] = useState<Seat[]>([]);
@@ -36,68 +35,75 @@ const useRealTimeSeats = (showId: string) => {
   const [error, setError] = useState<string | null>(null);
   const [userId] = useState(() => `user_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`);
 
-  // Initialize socket connection
+  // Fetch shows and initialize socket connection
   useEffect(() => {
-    const newSocket = io('http://localhost:3001');
-    setSocket(newSocket);
-
-    newSocket.on('connect', () => {
-      console.log('Connected to server');
-      newSocket.emit('join-show', showId);
-    });
-
-    newSocket.on('seats-updated', (data: { showId: string; seats: SeatUpdate[] }) => {
-      if (data.showId === showId) {
-        setShow(prevShow => {
-          if (!prevShow) return prevShow;
-          
-          const updatedSeats = prevShow.seats.map(seat => {
-            const update = data.seats.find(u => u.id === seat.id);
-            return update ? { ...seat, ...update } : seat;
-          });
-          
-          return { ...prevShow, seats: updatedSeats };
-        });
-      }
-    });
-
-    newSocket.on('disconnect', () => {
-      console.log('Disconnected from server');
-    });
-
-    return () => {
-      newSocket.emit('leave-show', showId);
-      newSocket.disconnect();
-    };
-  }, [showId]);
-
-  // Fetch initial show data
-  useEffect(() => {
-    const fetchShow = async () => {
+    const fetchShowsAndInitialize = async () => {
       try {
         setLoading(true);
-        const response = await fetch(`http://localhost:3001/api/shows/${showId}`);
+        const response = await fetch('http://localhost:3001/api/shows');
         if (!response.ok) {
-          throw new Error('Failed to fetch show data');
+          throw new Error('Failed to fetch shows');
         }
-        const showData = await response.json();
-        setShow(showData);
+        const shows = await response.json();
+        
+        if (shows && shows.length > 0) {
+          const firstShow = shows[0];
+          setShow(firstShow);
+
+          // Initialize socket after getting show data
+          const newSocket = io('http://localhost:3001');
+          setSocket(newSocket);
+
+          newSocket.on('connect', () => {
+            console.log('Connected to server');
+            newSocket.emit('join-show', firstShow._id);
+          });
+
+          newSocket.on('seats-updated', (data: { showId: string; seats: SeatUpdate[] }) => {
+            if (data.showId === firstShow._id) {
+              setShow(prevShow => {
+                if (!prevShow) return prevShow;
+                const updatedSeats = prevShow.seats.map(seat => {
+                  const update = data.seats.find(u => u.id === seat.id);
+                  return update ? { ...seat, ...update } : seat;
+                });
+                return { ...prevShow, seats: updatedSeats };
+              });
+            }
+          });
+
+          newSocket.on('disconnect', () => {
+            console.log('Disconnected from server');
+          });
+
+          newSocket.on('connect_error', (error) => {
+            console.error('Socket connection error:', error);
+            setError('Failed to connect to server');
+          });
+        }
       } catch (err) {
         setError(err instanceof Error ? err.message : 'An error occurred');
+        console.error('Error fetching data:', err);
       } finally {
         setLoading(false);
       }
     };
 
-    if (showId) {
-      fetchShow();
-    }
-  }, [showId]);
+    fetchShowsAndInitialize();
 
-  // Lock seats when selected
+    return () => {
+      if (socket) {
+        socket.disconnect();
+      }
+    };
+  }, []);
+
+  // Lock seats
   const lockSeats = useCallback(async (seatIds: string[]) => {
+    if (!show) return { success: false, error: 'No show selected' };
+
     try {
-      const response = await fetch(`http://localhost:3001/api/shows/${showId}/lock-seats`, {
+      const response = await fetch(`http://localhost:3001/api/shows/${show._id}/lock-seats`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -108,11 +114,6 @@ const useRealTimeSeats = (showId: string) => {
       const result = await response.json();
       
       if (!response.ok) {
-        if (result.conflicts) {
-          // Handle conflicts
-          console.warn('Seat conflicts:', result.conflicts);
-          return { success: false, conflicts: result.conflicts };
-        }
         throw new Error(result.error || 'Failed to lock seats');
       }
 
@@ -121,12 +122,14 @@ const useRealTimeSeats = (showId: string) => {
       console.error('Error locking seats:', err);
       return { success: false, error: err instanceof Error ? err.message : 'An error occurred' };
     }
-  }, [showId, userId]);
+  }, [show, userId]);
 
   // Release seats
   const releaseSeats = useCallback(async (seatIds: string[]) => {
+    if (!show) return { success: false, error: 'No show selected' };
+
     try {
-      const response = await fetch(`http://localhost:3001/api/shows/${showId}/release-seats`, {
+      const response = await fetch(`http://localhost:3001/api/shows/${show._id}/release-seats`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -145,12 +148,14 @@ const useRealTimeSeats = (showId: string) => {
       console.error('Error releasing seats:', err);
       return { success: false, error: err instanceof Error ? err.message : 'An error occurred' };
     }
-  }, [showId, userId]);
+  }, [show, userId]);
 
   // Book seats
   const bookSeats = useCallback(async (seatIds: string[], bookingData: any) => {
+    if (!show) return { success: false, error: 'No show selected' };
+
     try {
-      const response = await fetch(`http://localhost:3001/api/shows/${showId}/book-seats`, {
+      const response = await fetch(`http://localhost:3001/api/shows/${show._id}/book-seats`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -169,25 +174,23 @@ const useRealTimeSeats = (showId: string) => {
       console.error('Error booking seats:', err);
       return { success: false, error: err instanceof Error ? err.message : 'An error occurred' };
     }
-  }, [showId, userId]);
+  }, [show, userId]);
 
   // Handle seat selection
   const handleSeatSelect = useCallback(async (seat: Seat) => {
-    if (seat.status === 'occupied' || (seat.status === 'locked' && seat.lockedBy !== userId)) {
+    if (!show || seat.status === 'occupied' || (seat.status === 'locked' && seat.lockedBy !== userId)) {
       return;
     }
 
     const isSelected = selectedSeats.find(s => s.id === seat.id);
     
     if (isSelected) {
-      // Deselect seat - release lock
       const newSelectedSeats = selectedSeats.filter(s => s.id !== seat.id);
       setSelectedSeats(newSelectedSeats);
       await releaseSeats([seat.id]);
     } else {
-      // Select seat - acquire lock
       if (selectedSeats.length >= (show?.maxSeatsPerBooking || 6)) {
-        return; // Max seats reached
+        return;
       }
       
       const lockResult = await lockSeats([seat.id]);
@@ -195,16 +198,16 @@ const useRealTimeSeats = (showId: string) => {
         setSelectedSeats([...selectedSeats, seat]);
       }
     }
-  }, [selectedSeats, show?.maxSeatsPerBooking, userId, lockSeats, releaseSeats]);
+  }, [selectedSeats, show, userId, lockSeats, releaseSeats]);
 
-  // Release all selected seats on unmount
+  // Cleanup selected seats on unmount
   useEffect(() => {
     return () => {
       if (selectedSeats.length > 0) {
         releaseSeats(selectedSeats.map(s => s.id));
       }
     };
-  }, []);
+  }, [selectedSeats, releaseSeats]);
 
   return {
     show,

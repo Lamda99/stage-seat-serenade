@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 
 interface LocationData {
@@ -41,7 +40,12 @@ export const useLocation = () => {
     }
   }, []);
 
-  const getCurrentLocation = () => {
+  const updateSelectedCity = (city: string) => {
+    setSelectedCity(city);
+    localStorage.setItem('selectedCity', city);
+  };
+
+  const getCurrentLocation = async (): Promise<void> => {
     setIsLoading(true);
     setError(null);
 
@@ -51,64 +55,38 @@ export const useLocation = () => {
       return;
     }
 
-    navigator.geolocation.getCurrentPosition(
-      async (position) => {
-        try {
-          const { latitude, longitude } = position.coords;
-          
-          // In a real app, you would call a reverse geocoding API
-          // For now, we'll simulate getting location data
-          const locationData: LocationData = {
-            city: 'Mumbai', // This would come from reverse geocoding
-            state: 'Maharashtra',
-            country: 'India',
-            latitude,
-            longitude
-          };
-          
-          setCurrentLocation(locationData);
-          setSelectedCity(locationData.city);
-          localStorage.setItem('selectedCity', locationData.city);
-          localStorage.setItem('currentLocation', JSON.stringify(locationData));
-        } catch (err) {
-          setError('Failed to get location details');
-        } finally {
-          setIsLoading(false);
-        }
-      },
-      (err) => {
-        setError('Unable to retrieve your location');
-        setIsLoading(false);
-      },
-      {
-        enableHighAccuracy: true,
-        timeout: 10000,
-        maximumAge: 300000 // 5 minutes
-      }
-    );
-  };
+    try {
+      const position = await new Promise<GeolocationPosition>((resolve, reject) => {
+        navigator.geolocation.getCurrentPosition(resolve, reject);
+      });
 
-  const updateSelectedCity = (city: string) => {
-    setSelectedCity(city);
-    localStorage.setItem('selectedCity', city);
-  };
+      const { latitude, longitude } = position.coords;
 
-  const getDistanceBasedEvents = (userLat: number, userLng: number, events: any[]) => {
-    // In a real implementation, this would calculate actual distances
-    // For now, we'll just return events filtered by selected city
-    return events.filter(event => 
-      event.city === selectedCity || !event.city
-    );
+      // Here you would typically make an API call to reverse geocode the coordinates
+      // For now, we'll just set a default location
+      setCurrentLocation({
+        city: 'Pune',
+        state: 'Maharashtra',
+        country: 'India',
+        latitude,
+        longitude
+      });
+
+      updateSelectedCity('Pune');
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to get location');
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return {
     currentLocation,
     selectedCity,
-    popularCities,
     isLoading,
     error,
-    getCurrentLocation,
+    popularCities,
     updateSelectedCity,
-    getDistanceBasedEvents
+    getCurrentLocation
   };
 };

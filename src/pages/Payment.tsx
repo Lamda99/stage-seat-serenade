@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { ArrowLeft, CreditCard, Shield, Lock, CheckCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -7,7 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Separator } from '@/components/ui/separator';
-import Header from '../components/layout/Header';
+import EnhancedHeader from '../components/layout/EnhancedHeader';
 import { useNavigate, useLocation } from 'react-router-dom';
 
 const Payment = () => {
@@ -83,7 +82,7 @@ const Payment = () => {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <Header />
+      <EnhancedHeader />
       
       <div className="max-w-4xl mx-auto px-4 py-8">
         <div className="flex items-center mb-6">

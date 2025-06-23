@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { ArrowLeft, Clock, MapPin, Calendar, Users, CreditCard } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -6,8 +5,10 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Separator } from '@/components/ui/separator';
-import Header from '../components/layout/Header';
+import EnhancedHeader from '../components/layout/EnhancedHeader';
 import { useNavigate } from 'react-router-dom';
+import { validateIndianPhoneNumber, formatIndianPhoneNumber } from '@/lib/validators';
+import { useToast } from '@/hooks/use-toast';
 
 interface BookingConfirmationProps {
   bookingData?: {
@@ -23,12 +24,14 @@ interface BookingConfirmationProps {
 
 const BookingConfirmation = ({ bookingData }: BookingConfirmationProps) => {
   const navigate = useNavigate();
+  const { toast } = useToast();
   const [customerDetails, setCustomerDetails] = useState({
     fullName: '',
     email: '',
     phone: '',
     age: ''
   });
+  const [phoneError, setPhoneError] = useState<string | undefined>();
 
   // Mock booking data if not provided
   const booking = bookingData || {
@@ -42,16 +45,62 @@ const BookingConfirmation = ({ bookingData }: BookingConfirmationProps) => {
   };
 
   const handleInputChange = (field: string, value: string) => {
-    setCustomerDetails(prev => ({
-      ...prev,
-      [field]: value
-    }));
+    if (field === 'phone') {
+      const formattedNumber = formatIndianPhoneNumber(value);
+      const validation = validateIndianPhoneNumber(value);
+      setPhoneError(validation.error);
+      setCustomerDetails(prev => ({
+        ...prev,
+        [field]: formattedNumber
+      }));
+    } else {
+      setCustomerDetails(prev => ({
+        ...prev,
+        [field]: value
+      }));
+    }
   };
 
   const handleConfirmBooking = () => {
-    // Validate customer details
-    if (!customerDetails.fullName || !customerDetails.email || !customerDetails.phone) {
-      alert('Please fill in all required fields');
+    // Validate all required fields
+    const requiredFields = {
+      fullName: 'Full Name',
+      email: 'Email Address',
+      phone: 'Phone Number'
+    };
+
+    const missingFields = Object.entries(requiredFields)
+      .filter(([key]) => !customerDetails[key as keyof typeof customerDetails])
+      .map(([_, label]) => label);
+
+    if (missingFields.length > 0) {
+      toast({
+        variant: 'destructive',
+        title: 'Required Fields Missing',
+        description: `Please fill in the following fields: ${missingFields.join(', ')}`
+      });
+      return;
+    }
+
+    // Validate phone number
+    const phoneValidation = validateIndianPhoneNumber(customerDetails.phone);
+    if (!phoneValidation.isValid) {
+      toast({
+        variant: 'destructive',
+        title: 'Invalid Phone Number',
+        description: phoneValidation.error
+      });
+      return;
+    }
+
+    // Validate email format
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(customerDetails.email)) {
+      toast({
+        variant: 'destructive',
+        title: 'Invalid Email',
+        description: 'Please enter a valid email address'
+      });
       return;
     }
     
@@ -70,7 +119,7 @@ const BookingConfirmation = ({ bookingData }: BookingConfirmationProps) => {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <Header />
+      <EnhancedHeader />
       
       <div className="max-w-4xl mx-auto px-4 py-8">
         <div className="flex items-center mb-6">
@@ -134,7 +183,11 @@ const BookingConfirmation = ({ bookingData }: BookingConfirmationProps) => {
                     value={customerDetails.phone}
                     onChange={(e) => handleInputChange('phone', e.target.value)}
                     placeholder="+91 XXXXX XXXXX"
+                    className={phoneError ? 'border-red-500' : ''}
                   />
+                  {phoneError && (
+                    <p className="text-sm text-red-500 mt-1">{phoneError}</p>
+                  )}
                 </div>
 
                 <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
@@ -216,6 +269,7 @@ const BookingConfirmation = ({ bookingData }: BookingConfirmationProps) => {
                 <Button 
                   className="w-full bg-red-600 hover:bg-red-700 text-white py-3 text-lg font-semibold"
                   onClick={handleConfirmBooking}
+                  disabled={!!phoneError}
                 >
                   <CreditCard className="h-5 w-5 mr-2" />
                   Proceed to Payment
