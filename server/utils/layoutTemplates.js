@@ -1,4 +1,3 @@
-
 const SeatLayout = require('../models/SeatLayout');
 
 // Default theater layout template
@@ -27,6 +26,36 @@ const createDefaultTheaterLayout = () => {
     ],
     isTemplate: true,
     tags: ['theater', 'standard', 'medium']
+  };
+};
+
+// Curved theater layout template
+const createCurvedTheaterLayout = () => {
+  return {
+    name: 'Curved Theater Layout',
+    description: 'A curved theater seating arrangement for immersive viewing experience',
+    venue: 'Curved Theater',
+    aislePositions: [5, 11, 13],
+    curved: true,
+    rows: [
+      // Premium section (rows A-C) - closer to screen, more curved
+      { type: 'premium', seatCount: 14, price: 500, curve: 0.8 },
+      { type: 'premium', seatCount: 14, price: 500, curve: 0.7 },
+      { type: 'premium', seatCount: 14, price: 500, curve: 0.6 },
+      // Standard section (rows D-H) - moderate curve
+      { type: 'standard', seatCount: 16, price: 400, curve: 0.5 },
+      { type: 'standard', seatCount: 16, price: 400, curve: 0.4 },
+      { type: 'standard', seatCount: 16, price: 400, curve: 0.3 },
+      { type: 'standard', seatCount: 16, price: 400, curve: 0.2 },
+      { type: 'standard', seatCount: 16, price: 400, curve: 0.1 },
+      // Economy section (rows I-L) - minimal curve
+      { type: 'economy', seatCount: 18, price: 300, curve: 0.05 },
+      { type: 'economy', seatCount: 18, price: 300, curve: 0.03 },
+      { type: 'economy', seatCount: 18, price: 300, curve: 0.02 },
+      { type: 'economy', seatCount: 18, price: 300, curve: 0.01 }
+    ],
+    isTemplate: true,
+    tags: ['theater', 'curved', 'premium']
   };
 };
 
@@ -100,17 +129,19 @@ const initializeDefaultLayouts = async () => {
       console.log('Creating default seat layout templates...');
       
       const defaultTheater = SeatLayout.createFromTemplate(createDefaultTheaterLayout());
+      const curvedTheater = SeatLayout.createFromTemplate(createCurvedTheaterLayout());
       const concertHall = SeatLayout.createFromTemplate(createConcertHallLayout());
       const smallVenue = SeatLayout.createFromTemplate(createSmallVenueLayout());
       
       await Promise.all([
         defaultTheater.save(),
+        curvedTheater.save(),
         concertHall.save(),
         smallVenue.save()
       ]);
       
       console.log('Default seat layout templates created successfully');
-      return { defaultTheater, concertHall, smallVenue };
+      return { defaultTheater, curvedTheater, concertHall, smallVenue };
     }
     
     return existingLayouts;
@@ -122,6 +153,7 @@ const initializeDefaultLayouts = async () => {
 
 module.exports = {
   createDefaultTheaterLayout,
+  createCurvedTheaterLayout,
   createConcertHallLayout,
   createSmallVenueLayout,
   initializeDefaultLayouts
