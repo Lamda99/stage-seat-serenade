@@ -27,6 +27,8 @@ interface SeatUpdate {
   lockedBy?: string;
 }
 
+const API_BASE = import.meta.env.VITE_API_BASE_URL || "http://localhost:3001";
+
 const useRealTimeSeats = () => {
   const [socket, setSocket] = useState<Socket | null>(null);
   const [show, setShow] = useState<Show | null>(null);
@@ -40,7 +42,7 @@ const useRealTimeSeats = () => {
     const fetchShowsAndInitialize = async () => {
       try {
         setLoading(true);
-        const response = await fetch('http://localhost:3001/api/shows');
+        const response = await fetch(`${API_BASE}/api/shows`);
         if (!response.ok) {
           throw new Error('Failed to fetch shows');
         }
@@ -51,7 +53,7 @@ const useRealTimeSeats = () => {
           setShow(firstShow);
 
           // Initialize socket after getting show data
-          const newSocket = io('http://localhost:3001');
+          const newSocket = io(API_BASE);
           setSocket(newSocket);
 
           newSocket.on('connect', () => {
@@ -103,7 +105,7 @@ const useRealTimeSeats = () => {
     if (!show) return { success: false, error: 'No show selected' };
 
     try {
-      const response = await fetch(`http://localhost:3001/api/shows/${show._id}/lock-seats`, {
+      const response = await fetch(`${API_BASE}/api/shows/${show._id}/lock-seats`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -129,7 +131,7 @@ const useRealTimeSeats = () => {
     if (!show) return { success: false, error: 'No show selected' };
 
     try {
-      const response = await fetch(`http://localhost:3001/api/shows/${show._id}/release-seats`, {
+      const response = await fetch(`${API_BASE}/api/shows/${show._id}/release-seats`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -155,7 +157,7 @@ const useRealTimeSeats = () => {
     if (!show) return { success: false, error: 'No show selected' };
 
     try {
-      const response = await fetch(`http://localhost:3001/api/shows/${show._id}/book-seats`, {
+      const response = await fetch(`${API_BASE}/api/shows/${show._id}/book-seats`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

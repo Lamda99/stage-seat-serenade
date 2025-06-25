@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -9,7 +8,7 @@ import useRealTimeSeats from '../../hooks/useRealTimeSeats';
 
 interface RealTimeTheaterSeatingProps {
   showId: string;
-  onSeatSelect: (seats: any[]) => void;
+  onSeatSelect: (seats: Seat[]) => void;
   maxSeats?: number;
 }
 
@@ -77,7 +76,7 @@ const RealTimeTheaterSeating: React.FC<RealTimeTheaterSeatingProps> = ({
     );
   }
 
-  const getSeatStatus = (seat: any): 'available' | 'occupied' | 'selected' | 'locked' => {
+  const getSeatStatus = (seat: Seat): 'available' | 'occupied' | 'selected' | 'locked' => {
     const isSelected = selectedSeats.find(s => s.id === seat.id);
     return isSelected ? 'selected' : seat.status;
   };
@@ -87,7 +86,7 @@ const RealTimeTheaterSeating: React.FC<RealTimeTheaterSeatingProps> = ({
   };
 
   // Group seats by row
-  const seatsByRow = show.seats.reduce((acc: { [key: string]: any[] }, seat) => {
+  const seatsByRow = show.seats.reduce((acc: { [key: string]: Seat[] }, seat: Seat) => {
     if (!acc[seat.row]) {
       acc[seat.row] = [];
     }
@@ -174,13 +173,12 @@ const RealTimeTheaterSeating: React.FC<RealTimeTheaterSeatingProps> = ({
                 {/* Seats */}
                 <div className="flex space-x-1">
                   {seatsByRow[row]
-                    .sort((a: any, b: any) => a.number - b.number)
-                    .map((seat: any, seatIndex: number) => {
+                    .sort((a: Seat, b: Seat) => a.number - b.number)
+                    .map((seat: Seat, seatIndex: number) => {
                       // Add aisle space
                       const showAisle = seat.number === 6 || seat.number === 7 || seat.number === 12 || seat.number === 13;
-                      
                       return (
-                        <React.Fragment key={seat.id}>
+                        <div key={seat.id} style={{ display: 'contents' }}>
                           {showAisle && seat.number > 6 && (
                             <div className="w-8"></div>
                           )}
@@ -191,7 +189,7 @@ const RealTimeTheaterSeating: React.FC<RealTimeTheaterSeatingProps> = ({
                             onClick={() => handleSeatSelect(seat)}
                             disabled={seat.status === 'occupied' || (seat.status === 'locked' && !selectedSeats.find(s => s.id === seat.id))}
                           />
-                        </React.Fragment>
+                        </div>
                       );
                     })}
                 </div>
