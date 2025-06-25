@@ -125,7 +125,7 @@ const Signup = () => {
       });
       
       navigate('/');
-    } catch (error: Error) {
+    } catch (error: any) {
       console.error('Signup error:', error);
       toast({
         title: "Signup Failed",
@@ -157,7 +157,7 @@ const Signup = () => {
       });
       
       navigate('/');
-    } catch (error: Error) {
+    } catch (error: any) {
       console.error('Google Sign-in error:', error);
       toast({
         title: "Sign-in Failed",

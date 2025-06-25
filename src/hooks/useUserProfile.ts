@@ -1,3 +1,4 @@
+
 import { useMemo } from 'react';
 import { useAuth } from '@/context/useAuth';
 
@@ -8,10 +9,15 @@ export interface UserProfile {
   phone?: string | null;
   picture?: string | null;
   provider: 'email' | 'google' | 'phone';
+  city?: string;
+  preferences?: {
+    categories: string[];
+    notifications: boolean;
+  };
 }
 
 export const useUserProfile = () => {
-  const { user, loading } = useAuth();
+  const { user, loading, updateUserProfile } = useAuth();
 
   const profile = useMemo(() => {
     if (!user) return null;
@@ -27,12 +33,18 @@ export const useUserProfile = () => {
       email: user.email,
       phone: user.phoneNumber,
       picture: user.photoURL,
-      provider: provider as 'email' | 'google' | 'phone'
+      provider: provider as 'email' | 'google' | 'phone',
+      city: undefined, // This would need to be stored separately in a user profile collection
+      preferences: {
+        categories: [],
+        notifications: true
+      }
     };
   }, [user]);
 
   return {
     user: profile,
-    isLoading: loading
+    isLoading: loading,
+    updateUserProfile
   };
 };

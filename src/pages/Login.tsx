@@ -1,3 +1,4 @@
+
 import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Card } from '@/components/ui/card';
@@ -9,7 +10,7 @@ import { auth, type User } from '@/lib/firebase';
 const Login = () => {
   const { toast } = useToast();
   const navigate = useNavigate();
-  const { user, updateUserProfile } = useUserProfile();
+  const { user } = useUserProfile();
 
   useEffect(() => {
     // If already logged in, redirect to home
