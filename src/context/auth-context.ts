@@ -1,11 +1,10 @@
-
 import { createContext, useContext } from 'react';
 import { User } from 'firebase/auth';
 
 export interface AuthContextType {
   user: User | null;
   loading: boolean;
-  updateUserProfile: (profileData: any) => Promise<void>;
+  updateUserProfile: (profileData: { displayName?: string; photoURL?: string }) => Promise<void>;
 }
 
 export const AuthContext = createContext<AuthContextType>({
