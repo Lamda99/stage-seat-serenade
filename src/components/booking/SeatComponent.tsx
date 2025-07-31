@@ -1,42 +1,42 @@
-
 import React from 'react';
 import EnhancedSeatComponent from './EnhancedSeatComponent';
 
-interface SeatComponentProps {
-  seatId: string;
-  status: 'available' | 'occupied' | 'selected' | 'locked';
+interface Seat {
+  id: string;
+  row: string;
+  number: number;
   type: 'premium' | 'standard' | 'economy';
+  status: 'available' | 'occupied' | 'selected' | 'locked';
+  price: number;
+}
+
+interface SeatComponentProps {
+  seat: Seat;
+  status: 'available' | 'occupied' | 'selected' | 'locked';
   onClick: () => void;
   disabled?: boolean;
+  className?: string;
 }
 
 const SeatComponent: React.FC<SeatComponentProps> = ({
-  seatId,
+  seat,
   status,
-  type,
   onClick,
-  disabled = false
+  disabled = false,
+  className
 }) => {
   // Map status to enhanced component status
-  const enhancedStatus = status === 'locked' ? 'viewing' : status;
-  
-  // Determine price based on type
-  const priceMap = {
-    'premium': 500,
-    'standard': 400,
-    'economy': 300
-  };
+  const enhancedStatus = status === '' ? 'viewing' : status;
 
   return (
     <EnhancedSeatComponent
-      seatId={seatId}
+      seatId={seat.id}
       status={enhancedStatus}
-      type={type}
+      type={seat.type}
       onClick={onClick}
       disabled={disabled}
-      price={priceMap[type]}
-      accessibility={seatId.includes('A1') || seatId.includes('A2')} // Example accessibility seats
-      viewerCount={status === 'locked' ? Math.floor(Math.random() * 3) + 1 : 0}
+      price={seat.price}
+      className={className}
     />
   );
 };

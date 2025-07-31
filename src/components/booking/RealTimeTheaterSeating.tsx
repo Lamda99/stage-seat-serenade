@@ -5,9 +5,10 @@ import { Badge } from '@/components/ui/badge';
 import { Users, Eye, Star, AlertCircle, Wifi, WifiOff } from 'lucide-react';
 import SeatComponent from './SeatComponent';
 import useRealTimeSeats from '../../hooks/useRealTimeSeats';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 
 interface RealTimeTheaterSeatingProps {
-  showId: string;
+  showId: string; 
   onSeatSelect: (seats: Seat[]) => void;
   maxSeats?: number;
 }
@@ -85,6 +86,10 @@ const RealTimeTheaterSeating: React.FC<RealTimeTheaterSeatingProps> = ({
     return selectedSeats.reduce((total, seat) => total + seat.price, 0);
   };
 
+  const SEAT_RADIUS_STEP = 48; // px between rows
+  const SEAT_SIZE = 32; // px size of each seat
+  const SEAT_ANGLE_SPAN = Math.PI; // 180 degrees (semicircle)
+
   // Group seats by row
   const seatsByRow = show.seats.reduce((acc: { [key: string]: Seat[] }, seat: Seat) => {
     if (!acc[seat.row]) {
@@ -94,9 +99,54 @@ const RealTimeTheaterSeating: React.FC<RealTimeTheaterSeatingProps> = ({
     return acc;
   }, {});
 
-  // Sort rows alphabetically
+  // Sort rows alphabetically (A, B, C, ...)
   const sortedRows = Object.keys(seatsByRow).sort();
 
+  // For semicircular layout, calculate max seats in any row for scaling
+  const maxSeatsInRow = Math.max(...sortedRows.map(row => seatsByRow[row].length));
+
+  // --- Sectioned, Curved Layout Logic ---
+  // Define section seat counts per row
+  const getSectionSeatCounts = (rowIdx: number) => {
+    // Left/Right: Row 0:4, 1:3, 2:2, 3+:2; Center: always 5
+    const left = rowIdx === 0 ? 4 : rowIdx === 1 ? 3 : 2;
+    const right = left;
+    const center = 5;
+    return { left, center, right };
+  };
+
+  // Get total number of rows (from the center section, which is always present)
+  const totalRows = sortedRows.length;
+
+  // Helper to get seats for a section in a row (assign dynamically by order)
+  const getSectionSeats = (row: string, section: 'left' | 'center' | 'right', leftCount: number, centerCount: number, rightCount: number) => {
+    const seats = seatsByRow[row]?.sort((a, b) => a.number - b.number) || [];
+    if (section === 'left') return seats.slice(0, leftCount);
+    if (section === 'center') return seats.slice(leftCount, leftCount + centerCount);
+    if (section === 'right') return seats.slice(leftCount + centerCount, leftCount + centerCount + rightCount);
+    return [];
+  };
+
+  // --- Traditional Movie Ticket Booking Layout ---
+  // For each row, build a seatSlots array: [left seats, null (aisle), center seats, null (aisle), right seats]
+  const getRowSeatSlots = (rowIdx: number, row: string) => {
+    const { left: leftCount, center: centerCount, right: rightCount } = getSectionSeatCounts(rowIdx);
+    const seats = seatsByRow[row]?.sort((a, b) => a.number - b.number) || [];
+    // Assign seats in order: left, center, right
+    const leftSeats = seats.slice(0, leftCount);
+    const centerSeats = seats.slice(leftCount, leftCount + centerCount);
+    const rightSeats = seats.slice(leftCount + centerCount, leftCount + centerCount + rightCount);
+    // Build slots: [leftSeats..., null, centerSeats..., null, rightSeats...]
+    return [
+      ...leftSeats,
+      null, // aisle
+      ...centerSeats,
+      null, // aisle
+      ...rightSeats
+    ];
+  };
+
+  // --- Render ---
   return (
     <div className="max-w-6xl mx-auto p-4 space-y-6">
       {/* Connection Status */}
@@ -159,90 +209,112 @@ const RealTimeTheaterSeating: React.FC<RealTimeTheaterSeatingProps> = ({
         </CardContent>
       </Card>
 
-      {/* Seating Chart */}
+      {/* Seating Chart - Semicircular Layout */}
       <Card className="bg-white/95 backdrop-blur-sm">
         <CardContent className="p-6">
-          <div className="space-y-4">
-            {sortedRows.map((row) => (
-              <div key={row} className="flex justify-center items-center space-x-2">
-                {/* Row Label */}
-                <div className="w-8 text-center font-semibold text-gray-600">
-                  {row}
-                </div>
-
-                {/* Seats */}
-                <div className="flex space-x-1">
-                  {seatsByRow[row]
-                    .sort((a: Seat, b: Seat) => a.number - b.number)
-                    .map((seat: Seat, seatIndex: number) => {
-                      // Add aisle space
-                      const showAisle = seat.number === 6 || seat.number === 7 || seat.number === 12 || seat.number === 13;
-                      return (
-                        <div key={seat.id} style={{ display: 'contents' }}>
-                          {showAisle && seat.number > 6 && (
-                            <div className="w-8"></div>
-                          )}
-                          <SeatComponent
-                            seatId={seat.id}
-                            status={getSeatStatus(seat)}
-                            type={seat.type}
-                            onClick={() => handleSeatSelect(seat)}
-                            disabled={seat.status === 'occupied' || (seat.status === 'locked' && !selectedSeats.find(s => s.id === seat.id))}
-                          />
-                        </div>
-                      );
-                    })}
-                </div>
-
-                {/* Row Label (right side) */}
-                <div className="w-8 text-center font-semibold text-gray-600">
-                  {row}
-                </div>
+          {/* Traditional straight row layout */}
+          <div className="flex flex-col items-center space-y-3">
+            {/* Screen at the top */}
+            <div className="mb-6">
+              <div className="inline-block bg-gradient-to-r from-gray-800 to-gray-900 text-white px-8 py-3 rounded-t-3xl text-lg font-semibold shadow-lg">
+                SCREEN
               </div>
-            ))}
+              <div className="h-2 bg-gradient-to-r from-transparent via-gray-300 to-transparent rounded-full mx-auto w-2/3"></div>
+            </div>
+            {sortedRows.map((row, rowIdx) => {
+              const seatSlots = getRowSeatSlots(rowIdx, row);
+              return (
+                <div key={row} className="flex items-center justify-center space-x-2">
+                  {/* Row label */}
+                  <div className="w-8 text-center font-semibold text-gray-600">{row}</div>
+                  {/* Seats and aisles */}
+                  <div className="flex items-center">
+                    {seatSlots.map((seat, idx) => {
+                      if (seat) {
+                        const status = getSeatStatus(seat);
+                        return (
+                          <TooltipProvider key={seat.id}>
+                            <Tooltip>
+                              <TooltipTrigger asChild>
+                                <div>
+                                  <SeatComponent
+                                    seat={seat}
+                                    status={getSeatStatus(seat)}
+                                    onClick={() => handleSeatSelect(seat)}
+                                    disabled={seat.status === 'occupied' || (seat.status === 'locked' && !selectedSeats.find(s => s.id === seat.id))}
+                                  />
+                                </div>
+                              </TooltipTrigger>
+                              <TooltipContent side="top">
+                                <div className="text-xs">
+                                  <div><b>Row:</b> {seat.row}</div>
+                                  <div><b>Seat:</b> {seat.number}</div>
+                                  <div><b>Price:</b> ₹{seat.price}</div>
+                                </div>
+                              </TooltipContent>
+                            </Tooltip>
+                          </TooltipProvider>
+                        );
+                      } else {
+                        // Aisle
+                        return <div key={`aisle-${row}-${idx}`} className="w-8 h-8"></div>;
+                      }
+                    })}
+                  </div>
+                </div>
+              );
+            })}
           </div>
         </CardContent>
       </Card>
 
-      {/* Selection Summary */}
-      {selectedSeats.length > 0 && (
-        <Card className="bg-white/95 backdrop-blur-sm border-red-200">
-          <CardContent className="p-6">
-            <div className="flex flex-wrap items-center justify-between gap-4">
-              <div className="flex items-center space-x-4">
-                <div className="flex items-center space-x-2">
-                  <Users className="h-5 w-5 text-red-600" />
-                  <span className="font-semibold">
-                    {selectedSeats.length} seat{selectedSeats.length > 1 ? 's' : ''} selected
-                  </span>
-                </div>
-                <div className="flex flex-wrap gap-2">
-                  {selectedSeats.map(seat => (
-                    <Badge key={seat.id} variant="secondary" className="bg-red-100 text-red-800">
-                      {seat.id}
-                    </Badge>
-                  ))}
-                </div>
+      {/* Selected Seats Summary */}
+      <Card className="bg-white/95 backdrop-blur-sm">
+        <CardHeader>
+          <CardTitle className="text-center">Selected Seats</CardTitle>
+        </CardHeader>
+        <CardContent>
+          {selectedSeats.length === 0 ? (
+            <div className="text-center text-gray-500 py-4">No seats selected</div>
+          ) : (
+            <div>
+              <div className="grid grid-cols-3 gap-4 text-sm font-semibold text-gray-700 border-b pb-2 mb-2">
+                <div>Seat</div>
+                <div className="text-center">Price</div>
+                <div className="text-center">Action</div>
               </div>
-              <div className="flex items-center space-x-4">
-                <div className="text-right">
-                  <div className="text-2xl font-bold text-red-600">
-                    ₹{getTotalPrice().toLocaleString('en-IN')}
+              {selectedSeats.map(seat => (
+                <div key={seat.id} className="grid grid-cols-3 gap-4 text-sm items-center py-2">
+                  <div className="flex items-center space-x-2">
+                    <SeatComponent
+                      seat={seat}
+                      status="selected"
+                      className="cursor-default"
+                      onClick={() => handleSeatSelect(seat)}
+                    />
+                    <span>{`${seat.row}${seat.number}`}</span>
                   </div>
-                  <div className="text-sm text-gray-600">Total Amount</div>
+                  <div className="text-center font-semibold">
+                    ₹{seat.price}
+                  </div>
+                  <div className="text-center">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => handleSeatSelect(seat)}
+                    >
+                      Remove
+                    </Button>
+                  </div>
                 </div>
+              ))}
+              <div className="mt-4 text-lg font-semibold text-right">
+                Total: ₹{getTotalPrice()}
               </div>
             </div>
-            
-            {selectedSeats.length === maxSeats && (
-              <div className="mt-4 flex items-center space-x-2 text-amber-600">
-                <AlertCircle className="h-4 w-4" />
-                <span className="text-sm">Maximum {maxSeats} seats can be selected</span>
-              </div>
-            )}
-          </CardContent>
-        </Card>
-      )}
+          )}
+        </CardContent>
+      </Card>
     </div>
   );
 };

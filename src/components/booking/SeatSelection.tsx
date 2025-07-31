@@ -32,21 +32,7 @@ const SeatSelection: React.FC<SeatSelectionProps> = ({ showData, onBack }) => {
       { name: 'balcony', rows: ['K', 'L', 'M', 'N', 'O'], price: 300 }
     ];
 
-    categories.forEach(category => {
-      category.rows.forEach(row => {
-        for (let i = 1; i <= 20; i++) {
-          const isOccupied = Math.random() < 0.3; // 30% occupied seats
-          seats.push({
-            id: `${row}${i}`,
-            row,
-            number: i,
-            category: category.name as any,
-            status: isOccupied ? 'occupied' : 'available',
-            price: category.price
-          });
-        }
-      });
-    });
+    
 
     return seats;
   };
@@ -109,6 +95,7 @@ const SeatSelection: React.FC<SeatSelectionProps> = ({ showData, onBack }) => {
               Back
             </Button>
             <div>
+              
               <h1 className="text-2xl font-bold">{showData.title}</h1>
               <p className="text-gray-600">{showData.venue} | {showData.date}</p>
             </div>

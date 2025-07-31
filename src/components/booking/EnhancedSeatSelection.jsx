@@ -11,65 +11,64 @@ const EnhancedSeatSelection = ({ showData, onBack }) => {
   const [hoveredSeat, setHoveredSeat] = useState(null);
 
   // Enhanced seat layout based on typical Indian theater configuration
-  const generateSeats = () => {
-    const seats = [];
-    const sections = [
-      { 
-        name: 'Premium', 
-        rows: ['A', 'B', 'C'], 
-        seatsPerRow: 24, 
-        price: 800, 
-        color: 'gold',
-        description: 'Best view, premium comfort'
-      },
-      { 
-        name: 'Platinum', 
-        rows: ['D', 'E', 'F', 'G'], 
-        seatsPerRow: 26, 
-        price: 600, 
-        color: 'silver',
-        description: 'Excellent view, comfortable seating'
-      },
-      { 
-        name: 'Gold', 
-        rows: ['H', 'I', 'J', 'K', 'L'], 
-        seatsPerRow: 28, 
-        price: 450, 
-        color: 'bronze',
-        description: 'Good view, standard comfort'
-      },
-      { 
-        name: 'Silver', 
-        rows: ['M', 'N', 'O', 'P'], 
-        seatsPerRow: 30, 
-        price: 300, 
-        color: 'regular',
-        description: 'Budget-friendly option'
+ const generateSeats = () => {
+  const seats = [];
+  const sections = [
+    { 
+      name: 'Premium', 
+      rows: ['A', 'B', 'C'], 
+      seatsPerRow: 24, 
+      price: 800, 
+      color: 'gold',
+      description: 'Best view, premium comfort'
+    },
+    { 
+      name: 'Platinum', 
+      rows: ['D', 'E', 'F', 'G'], 
+      seatsPerRow: 26, 
+      price: 600, 
+      color: 'silver',
+      description: 'Excellent view, comfortable seating'
+    },
+    { 
+      name: 'Gold', 
+      rows: ['H', 'I', 'J', 'K', 'L'], 
+      seatsPerRow: 28, 
+      price: 450, 
+      color: 'bronze',
+      description: 'Good view, standard comfort'
+    },
+    { 
+      name: 'Silver', 
+      rows: ['M', 'N', 'O', 'P'], 
+      seatsPerRow: 30, 
+      price: 300, 
+      color: 'regular',
+      description: 'Budget-friendly option'
+    }
+  ];
+
+  sections.forEach(section => {
+    section.rows.forEach(row => {
+      for (let i = 1; i <= section.seatsPerRow; i++) {
+        const isBlocked = (i === 7 || i === section.seatsPerRow - 6); // Aisle seats only
+        seats.push({
+          id: `${row}${i}`,
+          row,
+          number: i,
+          section: section.name,
+          status: isBlocked ? 'blocked' : 'available',
+          price: section.price,
+          color: section.color,
+          description: section.description
+        });
       }
-    ];
-
-    sections.forEach(section => {
-      section.rows.forEach(row => {
-        for (let i = 1; i <= section.seatsPerRow; i++) {
-          const isOccupied = Math.random() < 0.25; // 25% occupied
-          const isBlocked = (i === 7 || i === section.seatsPerRow - 6); // Aisle seats
-          
-          seats.push({
-            id: `${row}${i}`,
-            row,
-            number: i,
-            section: section.name,
-            status: isOccupied ? 'occupied' : (isBlocked ? 'blocked' : 'available'),
-            price: section.price,
-            color: section.color,
-            description: section.description
-          });
-        }
-      });
     });
+  });
 
-    return seats;
-  };
+  return seats;
+};
+
 
   const [seats] = useState(generateSeats());
 
@@ -253,6 +252,7 @@ const EnhancedSeatSelection = ({ showData, onBack }) => {
                   </div>
                 )}
                 
+
                 {selectedSeats.length > 0 ? (
                   <div className="space-y-4">
                     <div>

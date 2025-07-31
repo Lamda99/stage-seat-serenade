@@ -64,8 +64,6 @@ const connectDB = async () => {
   try {
     console.log('Attempting to connect to MongoDB...');
     await mongoose.connect(process.env.MONGODB_URI, {
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
     });
     console.log('✅ Connected to MongoDB successfully');
     
@@ -156,6 +154,7 @@ setInterval(async () => {
 }, 30000); // Run every 30 seconds
 
 // Create sample show data if none exists
+// Create sample show data if none exists
 async function initializeSampleData() {
   try {
     // Initialize default layouts first
@@ -167,7 +166,7 @@ async function initializeSampleData() {
       
       // Get the default theater layout
       const defaultLayout = Array.isArray(layouts) 
-        ? layouts.find(l => l.name === 'Standard Theater Layout')
+        ? layouts.find(l => l.name === 'Custom Theater Layout')
         : layouts.defaultTheater;
       
       if (defaultLayout) {
@@ -179,16 +178,6 @@ async function initializeSampleData() {
         });
 
         await sampleShow.initializeSeatsFromLayout();
-        
-        // Add some random occupied seats for demo
-        sampleShow.seats.forEach(seat => {
-          if (Math.random() > 0.8) {
-            seat.status = 'occupied';
-            seat.bookedBy = 'demo-user';
-            seat.bookedAt = new Date();
-          }
-        });
-        
         await sampleShow.save();
         console.log('✅ Sample show data created successfully');
       }

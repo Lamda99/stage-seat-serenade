@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -45,7 +44,7 @@ const EnhancedTheaterSeating: React.FC<SeatLayoutProps> = ({
           row: rowLetter,
           number: seatNum,
           type: 'premium',
-          status: Math.random() > 0.8 ? 'occupied' : 'available',
+          status: 'available',
           price: 500
         });
       }

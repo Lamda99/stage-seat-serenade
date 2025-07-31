@@ -32,27 +32,25 @@ const seatLayoutSchema = new mongoose.Schema({
 // Create seat layout from template configuration
 seatLayoutSchema.statics.createFromTemplate = function(config) {
   const seats = [];
-  
+
   for (let rowIndex = 0; rowIndex < config.rows.length; rowIndex++) {
     const rowConfig = config.rows[rowIndex];
     const rowLetter = String.fromCharCode(65 + rowIndex);
-    
+
     for (let seatNum = 1; seatNum <= rowConfig.seatCount; seatNum++) {
-      // Skip aisle positions
-      if (config.aislePositions && config.aislePositions.includes(seatNum)) {
-        continue;
-      }
-      
+      // DO NOT SKIP aisle positions anymore
       seats.push({
         id: `${rowLetter}${seatNum}`,
         row: rowLetter,
         number: seatNum,
         type: rowConfig.type,
-        price: rowConfig.price
+        price: rowConfig.price,
+        // optional: mark if it's an aisle
+        isAisle: config.aislePositions?.includes(seatNum) || false
       });
     }
   }
-  
+
   return new this({
     name: config.name,
     description: config.description,
@@ -66,5 +64,6 @@ seatLayoutSchema.statics.createFromTemplate = function(config) {
     tags: config.tags || []
   });
 };
+
 
 module.exports = mongoose.model('SeatLayout', seatLayoutSchema);

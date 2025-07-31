@@ -1,6 +1,8 @@
 
+require('dotenv').config();
 const { execSync } = require('child_process');
 const fs = require('fs');
+
 
 console.log('🔧 Setting up theater booking backend...');
 
