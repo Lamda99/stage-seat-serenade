@@ -227,7 +227,7 @@ const EnhancedHeader = () => {
                   ? 'bg-gradient-to-r from-blue-600 to-slate-700 text-white' 
                   : 'bg-gradient-to-r from-red-600 to-red-800 text-white'
               }`}>
-                {isCorporate ? 'CorpREVent' : 'BookREVent'}
+                {isCorporate ? 'CorpREVent' : 'BookNEVent'}
               </div>
             </Link>
           </div>

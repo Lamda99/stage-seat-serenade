@@ -1,73 +1,94 @@
-# Welcome to your Lovable project
+# BookREVent - Theater & Cultural Event Booking Platform
 
-## Project info
+A modern theater and cultural event booking platform built with React, TypeScript, and Node.js.
 
-**URL**: https://lovable.dev/projects/098ce361-1fa0-4995-b3b3-afc107ca5159
+## Project Overview
 
-## How can I edit this code?
+BookREVent is a comprehensive ticket booking platform similar to BookMyShow, designed for theater shows, plays, and cultural events across India. The platform features real-time seat selection, user authentication, and a modern responsive interface.
 
-There are several ways of editing your application.
+## Tech Stack
 
-**Use Lovable**
+**Frontend:**
+- React with TypeScript
+- Vite for build tooling
+- Tailwind CSS for styling
+- shadcn/ui for components
+- Socket.IO for real-time updates
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/098ce361-1fa0-4995-b3b3-afc107ca5159) and start prompting.
+**Backend:**
+- Node.js with Express
+- MongoDB for database
+- Socket.IO for real-time communication
+- Firebase for authentication
 
-Changes made via Lovable will be committed automatically to this repo.
+## Getting Started
 
-**Use your preferred IDE**
+### Prerequisites
+- Node.js (v16 or higher)
+- MongoDB
+- npm or yarn
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+### Installation
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+1. Clone the repository:
+```bash
+git clone <your-repo-url>
+cd stage-seat-serenade
+```
 
-Follow these steps:
+2. Install frontend dependencies:
+```bash
+npm install
+```
 
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
+3. Install backend dependencies:
+```bash
+cd server
+npm install
+cd ..
+```
 
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
+4. Set up environment variables:
+Create a `.env` file in the server directory with:
+```
+MONGODB_URI=mongodb://localhost:27017/theater-booking
+JWT_SECRET=your-jwt-secret
+PORT=3001
+```
 
-# Step 3: Install the necessary dependencies.
-npm i
+5. Start the development servers:
 
-# Step 4: Start the development server with auto-reloading and an instant preview.
+Backend:
+```bash
+cd server
+npm start
+```
+
+Frontend (in a new terminal):
+```bash
 npm run dev
 ```
 
-**Edit a file directly in GitHub**
+## Features
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+- 🎭 Browse theater shows and events
+- 🪑 Real-time seat selection and booking
+- 👤 User authentication and profiles
+- 📱 Responsive design for all devices
+- ⚡ Real-time updates using WebSocket
+- 🎨 Modern UI with dual theme support
 
-**Use GitHub Codespaces**
+## Project Structure
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
-
-## What technologies are used for this project?
-
-This project is built with:
-
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
-
-## How can I deploy this project?
-
-Simply open [Lovable](https://lovable.dev/projects/098ce361-1fa0-4995-b3b3-afc107ca5159) and click on Share -> Publish.
-
-## Can I connect a custom domain to my Lovable project?
-
-Yes, you can!
-
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
-
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/tips-tricks/custom-domain#step-by-step-guide)
+```
+├── src/                 # Frontend source code
+│   ├── components/      # Reusable UI components
+│   ├── pages/          # Page components
+│   ├── hooks/          # Custom React hooks
+│   └── lib/            # Utility functions
+├── server/             # Backend source code
+│   ├── models/         # Database models
+│   ├── routes/         # API routes
+│   └── utils/          # Server utilities
+└── public/             # Static assets
+```
